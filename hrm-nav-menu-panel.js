@@ -33,6 +33,8 @@ const NAV_ICON = {
   search:       `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`,
   userRound:    `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/></svg>`,
   logOut:       `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
+  circleX:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
+  chevronRightSm: `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
 };
 
 const PANEL_STYLES = `
@@ -43,12 +45,16 @@ const PANEL_STYLES = `
     --ga-color-text-disabled:          #b9b9b9;
     --ga-color-text-disable-selected:  #6f7687;
     --ga-color-border-action:          #1f4e66;
+    --ga-color-border-action-hover:    #377ea0;
+    --ga-color-border-focus:           #1f4e66;
     --ga-color-border-primary:         #6f7687;
     --ga-color-border-tertiary:        #cccfd7;
+    --ga-color-border-disabled:        #cccfd7;
     --ga-color-surface-primary:        #ffffff;
     --ga-color-surface-page:           #f2f3f5;
     --ga-color-surface-selected:       #eef5ee;
     --ga-color-surface-highlight:      #fcf0e7;
+    --ga-color-surface-disabled:       #e2e4e9;
     --ga-color-icon-action:            #1f4e66;
     --ga-color-text-body-secondary:    #2a6480;
     --ga-radius-default:               4px;
@@ -217,24 +223,46 @@ const PANEL_STYLES = `
     height: 40px;
     padding: 8px 12px;
     background: var(--ga-color-surface-page);
+    border: 1px solid transparent;
     border-radius: var(--ga-radius-default);
-    cursor: pointer;
-    border: none;
+    cursor: text;
     width: 100%;
-    text-align: left;
+    box-sizing: border-box;
+    font-family: inherit;
+    transition: background-color 0.15s, border-color 0.15s;
   }
-  .search-field:hover { background: #e8eaed; }
-  .search-field svg { color: var(--ga-color-text-disable-selected); flex-shrink: 0; }
+  .search-field:hover {
+    background: var(--ga-color-surface-primary);
+    border-color: var(--ga-color-border-action-hover);
+  }
+  .search-field:focus-within {
+    background: var(--ga-color-surface-primary);
+    border: 2px solid var(--ga-color-border-focus);
+    padding: 7px 11px; /* compensate for +1px border */
+  }
+  .search-field.is-disabled {
+    background: var(--ga-color-surface-disabled);
+    border-color: var(--ga-color-border-disabled);
+    cursor: not-allowed;
+  }
+  .search-field > svg:first-child { color: var(--ga-color-text-disable-selected); flex-shrink: 0; }
 
-  .search-placeholder {
+  .search-input {
     flex: 1;
+    min-width: 0;
+    background: transparent;
+    border: none;
+    outline: none;
+    padding: 0;
+    font-family: inherit;
     font-size: var(--ga-text-md-size);
     line-height: var(--ga-text-md-lineheight);
-    color: var(--ga-color-text-disable-selected);
+    color: var(--ga-color-text-body);
     letter-spacing: -0.096px;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+  }
+  .search-input::placeholder {
+    color: var(--ga-color-text-disable-selected);
+    opacity: 1;
   }
 
   .search-shortcut {
@@ -248,12 +276,111 @@ const PANEL_STYLES = `
     background: var(--ga-color-surface-primary);
     flex-shrink: 0;
   }
+  .search-field.is-filled .search-shortcut { display: none; }
   .search-shortcut svg { color: var(--ga-color-text-disable-selected); }
   .search-shortcut span {
     font-size: var(--ga-text-xs-size);
     line-height: var(--ga-text-xs-lineheight);
     color: var(--ga-color-text-disable-selected);
     letter-spacing: 0.08px;
+  }
+
+  .search-clear {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: var(--ga-color-text-disable-selected);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .search-field.is-filled .search-clear { display: inline-flex; }
+  .search-clear:hover { color: var(--ga-color-text-action); }
+  .search-clear svg { display: block; }
+
+  /* ── Search results (nav-container content when searching) ──── */
+  .nav-search-counter {
+    display: flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 24px;
+    font-size: var(--ga-text-sm-size);
+    line-height: var(--ga-text-sm-lineheight);
+    font-weight: 500;
+    color: var(--ga-color-text-disable-selected);
+  }
+  .nav-search-results {
+    display: flex;
+    flex-direction: column;
+    padding: 0 12px;
+  }
+  .nav-search-result {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 8px 8px 24px;
+    border: none;
+    background: transparent;
+    font: inherit;
+    cursor: pointer;
+    text-align: left;
+    border-radius: var(--ga-radius-default);
+    width: 100%;
+  }
+  .nav-search-result:hover { background: var(--ga-color-surface-page); }
+  .nav-search-result-content {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1;
+  }
+  .nav-search-result-label {
+    font-size: var(--ga-text-md-size);
+    line-height: var(--ga-text-md-lineheight);
+    font-weight: 400;
+    color: var(--ga-color-text-action);
+    letter-spacing: -0.096px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .nav-search-result-label .result-match {
+    font-weight: 600;
+  }
+  .nav-search-hierarchy {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    overflow: hidden;
+    margin-top: 2px;
+  }
+  .hierarchy-item {
+    font-size: var(--ga-text-xs-size);
+    line-height: var(--ga-text-xs-lineheight);
+    color: var(--ga-color-text-disable-selected);
+    letter-spacing: 0.08px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    flex-shrink: 1;
+    min-width: 0;
+  }
+  .hierarchy-chevron {
+    display: inline-flex;
+    color: var(--ga-color-text-disable-selected);
+    flex-shrink: 0;
+  }
+  .hierarchy-chevron svg { display: block; }
+
+  .nav-search-callout {
+    padding: 16px 24px;
+    font-size: var(--ga-text-sm-size);
+    line-height: var(--ga-text-sm-lineheight);
+    color: var(--ga-color-text-disable-selected);
   }
 
   /* ── Nav items ─────────────────────────────────────── */
@@ -397,13 +524,47 @@ const PANEL_STYLES = `
     width: 100%;
     text-align: left;
   }
-  .footer-item:hover { background: var(--ga-color-surface-page); }
   .footer-item svg { color: var(--ga-color-text-action); flex-shrink: 0; }
   .footer-item span {
     font-size: var(--ga-text-md-size);
     line-height: var(--ga-text-md-lineheight);
     color: var(--ga-color-text-action);
     letter-spacing: -0.096px;
+    font-weight: 400;
+  }
+  /* hover: cream surface (no underline) */
+  .footer-item:hover { background: var(--ga-color-surface-highlight); }
+  /* pressed: same bg, weight 500, no underline */
+  .footer-item:active { background: var(--ga-color-surface-highlight); }
+  .footer-item:active span {
+    font-weight: 500;
+    text-decoration: none;
+  }
+  /* selected: green surface + semibold */
+  .footer-item.selected,
+  .footer-item.selected:hover,
+  .footer-item.selected:active {
+    background: var(--ga-color-surface-selected);
+  }
+  .footer-item.selected span {
+    font-weight: 600;
+    text-decoration: none;
+  }
+  /* disabled */
+  .footer-item:disabled,
+  .footer-item.is-disabled {
+    cursor: not-allowed;
+    background: var(--ga-color-surface-primary);
+  }
+  .footer-item:disabled span,
+  .footer-item.is-disabled span {
+    color: var(--ga-color-text-disabled);
+    text-decoration: none;
+    font-weight: 400;
+  }
+  .footer-item:disabled svg,
+  .footer-item.is-disabled svg {
+    color: var(--ga-color-text-disabled);
   }
 
   /* ── Footer user row ───────────────────────────────── */
@@ -480,6 +641,13 @@ const PANEL_STYLES = `
 
 const CMD_ICON = `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 9H5a2 2 0 0 0 0 4h4v4a2 2 0 0 0 4 0v-4h4a2 2 0 0 0 0-4h-4V5a2 2 0 0 0-4 0v4z"/></svg>`;
 
+// Mac/iOS get the ⌘ glyph; everything else gets a "Ctrl" label.
+const IS_MAC = (() => {
+  const data = navigator.userAgentData;
+  if (data && typeof data.platform === 'string') return /mac/i.test(data.platform);
+  return /Mac|iPhone|iPod|iPad/i.test(navigator.platform || navigator.userAgent || '');
+})();
+
 // Example items — will be replaced by caller via [items] attribute
 const EXAMPLE_ITEMS = [
   { id: 'my-tasks',          label: 'My tasks',          tier: 1, type: 'submenu'  },
@@ -508,11 +676,29 @@ class HrmNavMenuPanel extends HTMLElement {
     this._switcherOpen = false;
     this._footerOpen = false;
     this._expandedIds = new Set();
+    this._searchQuery = '';
+    this._showCallout = false;
+    this._calloutTimer = null;
   }
 
   connectedCallback() {
     this._render();
     this._bindEvents();
+    this._cmdKHandler = (e) => {
+      if ((e.metaKey || e.ctrlKey) && !e.shiftKey && !e.altKey && e.key.toLowerCase() === 'k') {
+        e.preventDefault();
+        if (!this.hasAttribute('open')) this.setAttribute('open', '');
+        requestAnimationFrame(() => {
+          const input = this.shadowRoot.querySelector('.search-input');
+          if (input) { input.focus(); input.select(); }
+        });
+      }
+    };
+    document.addEventListener('keydown', this._cmdKHandler);
+  }
+
+  disconnectedCallback() {
+    if (this._cmdKHandler) document.removeEventListener('keydown', this._cmdKHandler);
   }
 
   attributeChangedCallback(name, oldValue, newValue) {
@@ -529,6 +715,9 @@ class HrmNavMenuPanel extends HTMLElement {
         this._switcherOpen = false;
         this._footerOpen = false;
         this._expandedIds.clear();
+        this._searchQuery = '';
+        this._showCallout = false;
+        clearTimeout(this._calloutTimer);
       }
     }
     if (name === 'active-item' && this.hasAttribute('open')) {
@@ -691,6 +880,79 @@ class HrmNavMenuPanel extends HTMLElement {
     }).join('');
   }
 
+  _esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
+      ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
+    );
+  }
+
+  _renderNavArea() {
+    const q = this._searchQuery.trim();
+    if (q.length >= 3) return this._renderSearchResults(q);
+    if (q.length > 0 && q.length < 3 && this._showCallout) {
+      return `<div class="nav-search-callout">Type at least 3 characters to search</div>`;
+    }
+    return `<div class="nav-items">${this._renderNavItems()}</div>`;
+  }
+
+  _renderSearchResults(query) {
+    const qLower = query.toLowerCase();
+    const results = this._items.filter(i =>
+      i.type === 'link' && i.label.toLowerCase().includes(qLower)
+    );
+    const counter = `<div class="nav-search-counter">${results.length} result${results.length === 1 ? '' : 's'}</div>`;
+    if (results.length === 0) return counter;
+    const rows = results.map(r => this._renderSearchResult(r, query)).join('');
+    return `${counter}<div class="nav-search-results">${rows}</div>`;
+  }
+
+  _renderSearchResult(item, query) {
+    const ancestors = this._getAncestors(item);
+    const labelHtml = this._highlightMatch(item.label, query);
+    const hierarchy = ancestors.length > 0
+      ? `<div class="nav-search-hierarchy">${
+          ancestors.map((a, i) => `
+            ${i > 0 ? `<span class="hierarchy-chevron">${NAV_ICON.chevronRightSm}</span>` : ''}
+            <span class="hierarchy-item">${this._esc(a.label)}</span>
+          `).join('')
+        }</div>`
+      : '';
+    return `
+      <button class="nav-search-result" data-action="nav-item" data-id="${this._esc(item.id)}" data-label="${this._esc(item.label)}" data-type="link">
+        <div class="nav-search-result-content">
+          <div class="nav-search-result-label">${labelHtml}</div>
+          ${hierarchy}
+        </div>
+      </button>
+    `;
+  }
+
+  _getAncestors(target) {
+    const items = this._items;
+    const idx = items.findIndex(i => i.id === target.id);
+    if (idx < 0) return [];
+    const tier = target.tier || 1;
+    const ancestors = [];
+    let needed = tier - 1;
+    for (let i = idx - 1; i >= 0 && needed >= 1; i--) {
+      const t = items[i].tier || 1;
+      if (t === needed) {
+        ancestors.unshift(items[i]);
+        needed--;
+      }
+    }
+    return ancestors;
+  }
+
+  _highlightMatch(label, query) {
+    if (!query) return this._esc(label);
+    const lower = label.toLowerCase();
+    const q = query.toLowerCase();
+    const idx = lower.indexOf(q);
+    if (idx < 0) return this._esc(label);
+    return `${this._esc(label.slice(0, idx))}<span class="result-match">${this._esc(label.slice(idx, idx + query.length))}</span>${this._esc(label.slice(idx + query.length))}`;
+  }
+
   _renderUserAvatar() {
     if (this._userAvatar) {
       return `<img src="${this._userAvatar}" alt="${this._userName}" />`;
@@ -717,22 +979,19 @@ class HrmNavMenuPanel extends HTMLElement {
 
         <!-- Search -->
         <div class="search-area">
-          <button class="search-field" data-action="search" aria-label="Search">
+          <div class="search-field${this._searchQuery ? ' is-filled' : ''}">
             ${NAV_ICON.search}
-            <span class="search-placeholder">Search</span>
+            <input class="search-input" type="text" placeholder="Search" value="${this._esc(this._searchQuery)}" aria-label="Search">
             <div class="search-shortcut">
-              <div class="cmd-icon">${CMD_ICON}</div>
+              ${IS_MAC ? `<div class="cmd-icon">${CMD_ICON}</div>` : `<span>Ctrl</span>`}
               <span>K</span>
             </div>
-          </button>
-        </div>
-
-        <!-- Nav items -->
-        <div class="nav-container">
-          <div class="nav-items">
-            ${this._renderNavItems()}
+            <button class="search-clear" type="button" data-action="search-clear" aria-label="Clear search">${NAV_ICON.circleX}</button>
           </div>
         </div>
+
+        <!-- Nav items or search results -->
+        <div class="nav-container">${this._renderNavArea()}</div>
 
         <!-- Footer -->
         <div class="footer">
@@ -817,7 +1076,79 @@ class HrmNavMenuPanel extends HTMLElement {
         this.dispatchEvent(new CustomEvent('hrm-user-panel-toggle', { bubbles: true, composed: true }));
         return;
       }
+      if (action === 'search-clear') {
+        this._clearSearch();
+        const input = this.shadowRoot.querySelector('.search-input');
+        if (input) input.focus();
+        return;
+      }
     });
+
+    // Search input: typing, clearing, Esc.
+    this.shadowRoot.addEventListener('input', (e) => {
+      if (!e.target.classList || !e.target.classList.contains('search-input')) return;
+      this._handleSearchInput(e.target.value);
+    });
+    this.shadowRoot.addEventListener('keydown', (e) => {
+      if (!e.target.classList || !e.target.classList.contains('search-input')) return;
+      if (e.key === 'Escape') {
+        if (this._searchQuery) {
+          e.preventDefault();
+          e.stopPropagation();
+          this._clearSearch();
+          const input = this.shadowRoot.querySelector('.search-input');
+          if (input) input.focus();
+        } else {
+          e.preventDefault();
+          this.dispatchEvent(new CustomEvent('hrm-panel-close', { bubbles: true, composed: true }));
+        }
+      }
+    });
+    // Focus on input counts as a nav interaction → collapse switcher/footer.
+    this.shadowRoot.addEventListener('focusin', (e) => {
+      if (!e.target.classList || !e.target.classList.contains('search-input')) return;
+      if (this._switcherOpen || this._footerOpen) {
+        this._switcherOpen = false;
+        this._footerOpen = false;
+        this._render();
+        const input = this.shadowRoot.querySelector('.search-input');
+        if (input) input.focus();
+      }
+    });
+  }
+
+  _handleSearchInput(value) {
+    this._searchQuery = value;
+    clearTimeout(this._calloutTimer);
+    this._showCallout = false;
+    if (value.length > 0 && value.length < 3) {
+      this._calloutTimer = setTimeout(() => {
+        this._showCallout = true;
+        this._updateNavArea();
+      }, 1500);
+    }
+    this._updateSearchFieldState();
+    this._updateNavArea();
+  }
+
+  _clearSearch() {
+    this._searchQuery = '';
+    this._showCallout = false;
+    clearTimeout(this._calloutTimer);
+    const input = this.shadowRoot.querySelector('.search-input');
+    if (input) input.value = '';
+    this._updateSearchFieldState();
+    this._updateNavArea();
+  }
+
+  _updateSearchFieldState() {
+    const field = this.shadowRoot.querySelector('.search-field');
+    if (field) field.classList.toggle('is-filled', this._searchQuery.length > 0);
+  }
+
+  _updateNavArea() {
+    const container = this.shadowRoot.querySelector('.nav-container');
+    if (container) container.innerHTML = this._renderNavArea();
   }
 }
 

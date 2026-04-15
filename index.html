@@ -20,9 +20,122 @@
       background: #ffffff;
       border-radius: 4px;
     }
+
+    /* ── Config widget (dev-only tool for menu variant planning) ── */
+    .config-widget {
+      position: fixed;
+      /* Collapsed: shifted so the Config button occupies the same spot
+         as the Close button does in the open state (inside widget padding). */
+      bottom: 48px;
+      right: 48px;
+      z-index: 1000;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-size: 13px;
+      color: #1a1a1a;
+    }
+    .config-content { display: none; }
+    .config-widget.open {
+      bottom: 32px;
+      right: 32px;
+      background: #f5f5f7;
+      border: 1px solid #d5d5da;
+      border-radius: 12px;
+      padding: 16px;
+      width: 240px;
+      box-shadow: 0 12px 32px rgba(0,0,0,0.12);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+    .config-widget.open .config-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .config-widget.open .config-button {
+      align-self: flex-end;
+    }
+    .config-heading {
+      font-weight: 600;
+      font-size: 13px;
+      line-height: 18px;
+      color: #1a1a1a;
+      margin: 0 0 4px;
+    }
+    .config-tip {
+      font-size: 14px;
+      line-height: 20px;
+      font-style: italic;
+      color: #4a4a4f;
+      margin: 4px 0 0;
+    }
+    .config-tip .config-shortcut {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      background: #ffffff;
+      border: 1px solid #d5d5da;
+      border-radius: 4px;
+      padding: 0 4px;
+      font-size: 11px;
+      white-space: nowrap;
+    }
+    .config-row label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 4px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+      user-select: none;
+    }
+    .config-row input[type="checkbox"]:disabled {
+      cursor: not-allowed;
+    }
+    .config-row input[type="checkbox"]:disabled + span {
+      opacity: 0.45;
+    }
+    .config-children {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      padding-left: 20px;
+      margin-top: 2px;
+    }
+    .config-button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 120px;
+      padding: 10px 18px;
+      box-sizing: border-box;
+      background: #ffffff;
+      border: 1px solid #d5d5da;
+      border-radius: 9999px;
+      color: #1a1a1a;
+      font: inherit;
+      font-weight: 500;
+      cursor: pointer;
+      transition: box-shadow 0.2s ease;
+      white-space: nowrap;
+    }
+    .config-button:hover { box-shadow: 0 6px 18px rgba(0,0,0,0.18); }
+    .config-icon {
+      width: 16px;
+      height: 16px;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    .config-row.flash-pulse { animation: configFlash 900ms ease-in-out; }
+    @keyframes configFlash {
+      0%, 33%, 66%, 100% { background-color: transparent; }
+      16.5%, 49.5%, 83% { background-color: #fde68a; }
+    }
   </style>
-  <script src="./hrm-nav-menu.js?v=11" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=11" defer></script>
+  <script src="./hrm-nav-menu.js?v=26" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=26" defer></script>
 </head>
 <body>
 
@@ -39,6 +152,31 @@
   <main class="content-area" id="content-area">
     <div class="page-box"></div>
   </main>
+
+  <!-- Config widget: dev-only tool for switching menu variants. Not part of the shipping UI. -->
+  <div class="config-widget" id="config-widget">
+    <div class="config-content">
+      <p class="config-heading">Choose which content is enabled to the user</p>
+      <div class="config-row" data-row="approval">
+        <label><input type="checkbox" data-cfg="approval" checked><span>Approval</span></label>
+      </div>
+      <div class="config-row" data-row="hrm">
+        <label><input type="checkbox" data-cfg="hrm" checked><span>HRM</span></label>
+      </div>
+      <div class="config-children">
+        <div class="config-row" data-row="hrm.calendar"><label><input type="checkbox" data-cfg="hrm.calendar" checked><span>Calendar</span></label></div>
+        <div class="config-row" data-row="hrm.employees"><label><input type="checkbox" data-cfg="hrm.employees" checked><span>Employees</span></label></div>
+        <div class="config-row" data-row="hrm.expense"><label><input type="checkbox" data-cfg="hrm.expense" checked><span>Expense</span></label></div>
+        <div class="config-row" data-row="hrm.payroll"><label><input type="checkbox" data-cfg="hrm.payroll" checked><span>Payroll</span></label></div>
+        <div class="config-row" data-row="hrm.payroll-portal"><label><input type="checkbox" data-cfg="hrm.payroll-portal" checked><span>Payroll Portal</span></label></div>
+      </div>
+      <p class="config-tip">Tip: Use <span class="config-shortcut">Command+K</span> to open menu and search ⚡</p>
+    </div>
+    <button class="config-button" id="config-button" type="button" aria-expanded="false">
+      <svg class="config-icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+      <span class="config-label">Config</span>
+    </button>
+  </div>
 
   <script>
     const nav   = document.querySelector('hrm-nav-menu');
@@ -182,7 +320,38 @@
           { id: 'set-pay-work-time', label: 'Work time agreements - New tab', tier: 3, type: 'link' },
     ];
 
-    panel.setAttribute('items', JSON.stringify(HRM_ITEMS));
+    // ── Approval module items (from g-sheet-csv/*-Approval.csv) ───
+    const APPROVAL_ITEMS = [
+      { id: 'apv-my-tasks', label: 'My tasks', tier: 1, type: 'link' },
+      { id: 'apv-my-history', label: 'My history', tier: 1, type: 'link' },
+      { id: 'apv-task-overview', label: 'Task overview', tier: 1, type: 'link' },
+      { id: 'apv-process-overview', label: 'Process overview', tier: 1, type: 'link' },
+      { id: 'apv-document-overview', label: 'Document overview', tier: 1, type: 'link' },
+      { id: 'apv-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'apv-set-notifications', label: 'Notifications', tier: 2, type: 'link' },
+        { id: 'apv-set-substitute', label: 'Substitute', tier: 2, type: 'link' },
+        { id: 'apv-set-preferences', label: 'Preferences', tier: 2, type: 'link' },
+      { id: 'apv-configuration', label: 'Configuration', tier: 1, type: 'submenu' },
+        { id: 'apv-cfg-cost-units', label: 'Cost units', tier: 2, type: 'link' },
+        { id: 'apv-cfg-departments', label: 'Departments', tier: 2, type: 'link' },
+        { id: 'apv-cfg-due-settings', label: 'Due settings', tier: 2, type: 'link' },
+        { id: 'apv-cfg-managers', label: 'Managers', tier: 2, type: 'link' },
+        { id: 'apv-cfg-projects', label: 'Projects', tier: 2, type: 'link' },
+        { id: 'apv-cfg-roles', label: 'Roles', tier: 2, type: 'link' },
+        { id: 'apv-cfg-substitutes', label: 'Substitutes', tier: 2, type: 'link' },
+        { id: 'apv-cfg-workflows', label: 'Workflows', tier: 2, type: 'link' },
+    ];
+
+    const MODULE_META = {
+      hrm:      { name: 'HRM',      items: HRM_ITEMS,      defaultId: 'pay-overview' },
+      approval: { name: 'Approval', items: APPROVAL_ITEMS, defaultId: 'apv-my-tasks' },
+    };
+
+    let activeModule = 'hrm';
+
+    // Mutable view of items shown in the panel; reflects active module + config filter.
+    let visibleItems = HRM_ITEMS;
+    panel.setAttribute('items', JSON.stringify(visibleItems));
 
     nav.addEventListener('hrm-menu-toggle',   () => panel.toggleAttribute('open'));
     nav.addEventListener('hrm-company-click', () => console.log('company selector clicked'));
@@ -196,18 +365,18 @@
     // ── Breadcrumb: walk HRM_ITEMS ancestors by tier ──────
     // Build nested subtree (direct children of item at `idx`, recursively)
     function buildSubtree(idx) {
-      const parentTier = HRM_ITEMS[idx].tier || 1;
+      const parentTier = visibleItems[idx].tier || 1;
       const children = [];
-      for (let i = idx + 1; i < HRM_ITEMS.length; i++) {
-        const t = HRM_ITEMS[i].tier || 1;
+      for (let i = idx + 1; i < visibleItems.length; i++) {
+        const t = visibleItems[i].tier || 1;
         if (t <= parentTier) break;
         if (t === parentTier + 1) {
           const node = {
-            id: HRM_ITEMS[i].id,
-            label: HRM_ITEMS[i].label,
-            type: HRM_ITEMS[i].type,
+            id: visibleItems[i].id,
+            label: visibleItems[i].label,
+            type: visibleItems[i].type,
           };
-          if (HRM_ITEMS[i].type === 'submenu') {
+          if (visibleItems[i].type === 'submenu') {
             node.children = buildSubtree(i);
           }
           children.push(node);
@@ -217,25 +386,25 @@
     }
 
     function findSiblings(id) {
-      const idx = HRM_ITEMS.findIndex(i => i.id === id);
+      const idx = visibleItems.findIndex(i => i.id === id);
       if (idx < 0) return [];
-      const tier = HRM_ITEMS[idx].tier || 1;
+      const tier = visibleItems[idx].tier || 1;
       // Parent boundary (first item with tier < current when walking back)
       let parentStart = 0;
       for (let i = idx - 1; i >= 0; i--) {
-        if ((HRM_ITEMS[i].tier || 1) < tier) { parentStart = i + 1; break; }
+        if ((visibleItems[i].tier || 1) < tier) { parentStart = i + 1; break; }
       }
       const siblings = [];
-      for (let i = parentStart; i < HRM_ITEMS.length; i++) {
-        const t = HRM_ITEMS[i].tier || 1;
+      for (let i = parentStart; i < visibleItems.length; i++) {
+        const t = visibleItems[i].tier || 1;
         if (t < tier) break;
-        if (t === tier && HRM_ITEMS[i].id !== id) {
+        if (t === tier && visibleItems[i].id !== id) {
           const node = {
-            id: HRM_ITEMS[i].id,
-            label: HRM_ITEMS[i].label,
-            type: HRM_ITEMS[i].type,
+            id: visibleItems[i].id,
+            label: visibleItems[i].label,
+            type: visibleItems[i].type,
           };
-          if (HRM_ITEMS[i].type === 'submenu') {
+          if (visibleItems[i].type === 'submenu') {
             node.children = buildSubtree(i);
           }
           siblings.push(node);
@@ -245,14 +414,14 @@
     }
 
     function computeBreadcrumb(id) {
-      const idx = HRM_ITEMS.findIndex(i => i.id === id);
+      const idx = visibleItems.findIndex(i => i.id === id);
       if (idx < 0) return [];
-      const target = HRM_ITEMS[idx];
+      const target = visibleItems[idx];
       const path = [target];
       let needed = (target.tier || 1) - 1;
       for (let i = idx - 1; i >= 0 && needed >= 1; i--) {
-        if ((HRM_ITEMS[i].tier || 1) === needed) {
-          path.unshift(HRM_ITEMS[i]);
+        if ((visibleItems[i].tier || 1) === needed) {
+          path.unshift(visibleItems[i]);
           needed--;
         }
       }
@@ -368,10 +537,151 @@
 
     loadPage('pay-overview');
 
+    // ── Config widget (dev-only menu-variant planner) ─────────
+    const configWidget = document.getElementById('config-widget');
+    const configButton = document.getElementById('config-button');
+    const configLabel  = configButton.querySelector('.config-label');
+
+    // Swap the tip's shortcut label for non-Mac platforms.
+    const isMac = (() => {
+      const d = navigator.userAgentData;
+      if (d && typeof d.platform === 'string') return /mac/i.test(d.platform);
+      return /Mac|iPhone|iPod|iPad/i.test(navigator.platform || navigator.userAgent || '');
+    })();
+    if (!isMac) {
+      const sc = configWidget.querySelector('.config-shortcut');
+      if (sc) sc.textContent = 'Ctrl+K';
+    }
+
+    configButton.addEventListener('click', () => {
+      const open = configWidget.classList.toggle('open');
+      configLabel.textContent = open ? 'Close' : 'Config';
+      configButton.setAttribute('aria-expanded', String(open));
+    });
+
+    const configCheckboxes = configWidget.querySelectorAll('input[data-cfg]');
+    const configState = {};
+    configCheckboxes.forEach(cb => { configState[cb.dataset.cfg] = cb.checked; });
+
+    const HRM_CHILD_LABELS = {
+      'hrm.calendar':       'Calendar',
+      'hrm.employees':      'Employees',
+      'hrm.expense':        'Expense',
+      'hrm.payroll':        'Payroll',
+      'hrm.payroll-portal': 'Payroll Portal',
+    };
+
+    function filterItemsByLabel(items, hiddenLabels) {
+      const out = [];
+      let skipTier = null;
+      for (const item of items) {
+        const tier = item.tier || 1;
+        if (skipTier !== null) {
+          if (tier > skipTier) continue;
+          skipTier = null;
+        }
+        if (item.type === 'submenu' && hiddenLabels.has(item.label)) {
+          skipTier = tier;
+          continue;
+        }
+        out.push(item);
+      }
+      return out;
+    }
+
+    function applyConfig() {
+      // Auto-switch back to HRM if Approval was active but is now disabled.
+      if (activeModule === 'approval' && !configState.approval) {
+        activeModule = 'hrm';
+      }
+
+      // Compute visible items for the active module (HRM honours config; Approval has no config children yet).
+      if (activeModule === 'hrm') {
+        const hidden = new Set();
+        const hrmOn = configState.hrm;
+        for (const key in HRM_CHILD_LABELS) {
+          const effective = hrmOn && configState[key];
+          if (!effective) hidden.add(HRM_CHILD_LABELS[key]);
+        }
+        visibleItems = filterItemsByLabel(HRM_ITEMS, hidden);
+      } else {
+        visibleItems = APPROVAL_ITEMS;
+      }
+      panel.setAttribute('items', JSON.stringify(visibleItems));
+      panel.setAttribute('module-name', MODULE_META[activeModule].name);
+
+      // Module-switcher list = options to switch TO (excludes the active one,
+      // and Approval is hidden entirely if unchecked in Config).
+      const modules = [];
+      if (activeModule !== 'hrm')      modules.push({ id: 'hrm',      name: 'HRM' });
+      if (activeModule !== 'approval' && configState.approval) {
+        modules.push({ id: 'approval', name: 'Approval' });
+      }
+      panel.setAttribute('modules', JSON.stringify(modules));
+
+      const activeId = panel.getAttribute('active-item');
+      if (!activeId || !visibleItems.find(i => i.id === activeId)) {
+        const fallback = visibleItems.find(i => i.type === 'link') || { id: MODULE_META[activeModule].defaultId };
+        loadPage(fallback.id);
+      } else {
+        // Active unchanged — refresh breadcrumb (sibling tree may have changed).
+        nav.setAttribute('breadcrumbs', JSON.stringify(computeBreadcrumb(activeId)));
+      }
+    }
+
+    function updateChildEnabledStates() {
+      const hrmOn = configState.hrm;
+      configWidget.querySelectorAll('input[data-cfg^="hrm."]').forEach(cb => {
+        cb.disabled = !hrmOn;
+      });
+    }
+
+    function flashRow(rowEl) {
+      if (!rowEl) return;
+      rowEl.classList.remove('flash-pulse');
+      void rowEl.offsetWidth; // force reflow so the animation can retrigger
+      rowEl.classList.add('flash-pulse');
+      rowEl.addEventListener('animationend',
+        () => rowEl.classList.remove('flash-pulse'),
+        { once: true });
+    }
+
+    configCheckboxes.forEach(cb => {
+      cb.addEventListener('change', () => {
+        const key = cb.dataset.cfg;
+        const newChecked = cb.checked;
+
+        // Block unchecking the last remaining enabled HRM child; flash parent.
+        if (!newChecked && key.startsWith('hrm.') && configState.hrm) {
+          const siblings = Array.from(configWidget.querySelectorAll('input[data-cfg^="hrm."]'))
+            .filter(other => other !== cb);
+          const othersChecked = siblings.some(o => o.checked);
+          if (!othersChecked) {
+            cb.checked = true;
+            flashRow(configWidget.querySelector('[data-row="hrm"]'));
+            return;
+          }
+        }
+
+        configState[key] = newChecked;
+        if (key === 'hrm') updateChildEnabledStates();
+        applyConfig();
+      });
+    });
+
+    updateChildEnabledStates();
+
     panel.addEventListener('hrm-panel-close',      () => panel.removeAttribute('open'));
     panel.addEventListener('hrm-nav-item',         (e) => { console.log('nav item:', e.detail); loadPage(e.detail.id); panel.removeAttribute('open'); });
     panel.addEventListener('hrm-module-toggle',    () => console.log('module switcher toggled'));
-    panel.addEventListener('hrm-module-select',    (e) => console.log('module selected:', e.detail));
+    panel.addEventListener('hrm-module-select',    (e) => {
+      const id = e.detail && e.detail.id;
+      if (id && id !== activeModule && MODULE_META[id]) {
+        activeModule = id;
+        applyConfig();
+        loadPage(MODULE_META[id].defaultId);
+      }
+    });
     panel.addEventListener('hrm-profile',          () => console.log('my profile clicked'));
     panel.addEventListener('hrm-logout',           () => console.log('log out clicked'));
     panel.addEventListener('hrm-user-panel-toggle',() => console.log('user panel toggled'));
