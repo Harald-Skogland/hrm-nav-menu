@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <title>hrm-nav-menu demo</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+  <style>
+    body { margin: 0; background: #f5f7f9; }
+    .content-area {
+      margin: 16px;
+      min-height: calc(100vh - 64px - 32px);
+      display: flex;
+    }
+    .page-box {
+      flex: 1;
+      background: #ffffff;
+      border-radius: 4px;
+    }
+  </style>
+  <script src="./hrm-nav-menu.js?v=4" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=4" defer></script>
+</head>
+<body>
+
+  <hrm-nav-menu company="Acme Corp"></hrm-nav-menu>
+
+  <hrm-nav-menu-panel
+    module-name="HRM"
+    user-name="Anna Andersson"
+    modules='[
+      {"id":"approval","name":"Approval"}
+    ]'
+  ></hrm-nav-menu-panel>
+
+  <main class="content-area" id="content-area">
+    <div class="page-box"></div>
+  </main>
+
+  <script>
+    const nav   = document.querySelector('hrm-nav-menu');
+    const panel = document.querySelector('hrm-nav-menu-panel');
+
+    const HRM_ITEMS = [
+      // ── Calendar ──
+      { id: 'calendar', label: 'Calendar', tier: 1, type: 'submenu'},
+        { id: 'cal-event-registration', label: 'Event registration', tier: 2, type: 'link' },
+        { id: 'cal-timesheets', label: 'Timesheets', tier: 2, type: 'link' },
+        { id: 'cal-planned-leaves', label: 'Planned leaves', tier: 2, type: 'link' },
+        { id: 'cal-requests-overview', label: 'Requests overview', tier: 2, type: 'link' },
+        { id: 'cal-vacation-management', label: 'Vacation management', tier: 2, type: 'link' },
+        { id: 'cal-roster', label: 'Roster', tier: 2, type: 'link' },
+        { id: 'cal-reports', label: 'Reports', tier: 2, type: 'submenu'},
+          { id: 'cal-rpt-overview', label: 'Reports overview', tier: 3, type: 'link' },
+          { id: 'cal-rpt-absence-pct', label: 'Absence in percent', tier: 3, type: 'link' },
+          { id: 'cal-rpt-absence-stats', label: 'Absence statistics', tier: 3, type: 'link' },
+          { id: 'cal-rpt-my-registrations', label: 'All my registrations', tier: 3, type: 'link' },
+          { id: 'cal-rpt-all-registrations', label: 'All registrations', tier: 3, type: 'link' },
+          { id: 'cal-rpt-balances', label: 'Balances', tier: 3, type: 'submenu'},
+            { id: 'cal-rpt-bal-flexitime', label: 'Flexitime', tier: 4, type: 'link' },
+            { id: 'cal-rpt-bal-saved-overtime', label: 'Saved overtime', tier: 4, type: 'link' },
+            { id: 'cal-rpt-bal-vacation', label: 'Vacation balances', tier: 4, type: 'link' },
+          { id: 'cal-rpt-personnel-list', label: 'Personnel list', tier: 3, type: 'link' },
+          { id: 'cal-rpt-refundable-absence', label: 'Refundable absence', tier: 3, type: 'link' },
+          { id: 'cal-rpt-self-certified', label: 'Self certified sickness', tier: 3, type: 'link' },
+          { id: 'cal-rpt-worked-hours', label: 'Worked hours overview', tier: 3, type: 'link' },
+
+      // ── Employees ──
+      { id: 'employees', label: 'Employees', tier: 1, type: 'submenu'},
+        { id: 'emp-list', label: 'Employee list', tier: 2, type: 'link' },
+        { id: 'emp-card', label: 'Employee card', tier: 2, type: 'link' },
+        { id: 'emp-historic-bulk', label: 'Historic bulk operations', tier: 2, type: 'link' },
+        { id: 'emp-import-vacation', label: 'Import vacation balances', tier: 2, type: 'link' },
+        { id: 'emp-import-absences', label: 'Import absences', tier: 2, type: 'link' },
+
+      // ── Expense ──
+      { id: 'expense', label: 'Expense', tier: 1, type: 'submenu'},
+        { id: 'exp-home', label: 'Home', tier: 2, type: 'link' },
+        { id: 'exp-additional-services', label: 'Additional services', tier: 2, type: 'link' },
+        { id: 'exp-reports', label: 'Reports', tier: 2, type: 'submenu'},
+          { id: 'exp-rpt-data-extract', label: 'Data extract', tier: 3, type: 'link' },
+          { id: 'exp-rpt-driving-log', label: 'Driving log (admin)', tier: 3, type: 'link' },
+          { id: 'exp-rpt-claim-download', label: 'Claim download', tier: 3, type: 'link' },
+          { id: 'exp-rpt-emissions', label: 'Emissions', tier: 3, type: 'link' },
+
+      // ── Payroll ──
+      { id: 'payroll', label: 'Payroll', tier: 1, type: 'submenu'},
+        { id: 'pay-overview', label: 'Overview of all companies', tier: 2, type: 'link' },
+        { id: 'pay-transactions', label: 'Transactions', tier: 2, type: 'link' },
+        { id: 'pay-tasks', label: 'Tasks', tier: 2, type: 'link' },
+        { id: 'pay-paycodes', label: 'Paycodes', tier: 2, type: 'link' },
+        { id: 'pay-digital-income', label: 'Digital Income Form', tier: 2, type: 'link' },
+        { id: 'pay-reports', label: 'Reports', tier: 2, type: 'submenu'},
+          { id: 'pay-rpt-a-messages', label: 'A-messages', tier: 3, type: 'link' },
+          { id: 'pay-rpt-accounting', label: 'Accounting overview', tier: 3, type: 'link' },
+          { id: 'pay-rpt-employee', label: 'Employee report', tier: 3, type: 'link' },
+          { id: 'pay-rpt-analytics', label: 'HRM analytics', tier: 3, type: 'link' },
+          { id: 'pay-rpt-reconciliation', label: 'Reconcilliation reports', tier: 3, type: 'link' },
+          { id: 'pay-rpt-reports', label: 'Reports', tier: 3, type: 'link' },
+          { id: 'pay-rpt-transactions', label: 'Transaction overview', tier: 3, type: 'link' },
+
+      // ── Payroll Portal ──
+      { id: 'payroll-portal', label: 'Payroll Portal', tier: 1, type: 'submenu'},
+        { id: 'pp-dialogue', label: 'Dialogue', tier: 2, type: 'link' },
+        { id: 'pp-employees', label: 'Employees', tier: 2, type: 'link' },
+        { id: 'pp-documents', label: 'Documents', tier: 2, type: 'link' },
+
+      // ── Reports ──
+      { id: 'reports', label: 'Reports', tier: 1, type: 'submenu'},
+        { id: 'rpt-calendar', label: 'Calendar', tier: 2, type: 'submenu'},
+          { id: 'rpt-cal-absence-pct', label: 'Absence in percent', tier: 3, type: 'link' },
+          { id: 'rpt-cal-absence-stats', label: 'Absence statistics', tier: 3, type: 'link' },
+          { id: 'rpt-cal-all-registrations', label: 'All registrations', tier: 3, type: 'link' },
+          { id: 'rpt-cal-balances', label: 'Balances', tier: 3, type: 'link' },
+          { id: 'rpt-cal-personnel-list', label: 'Personnel list', tier: 3, type: 'link' },
+          { id: 'rpt-cal-refundable', label: 'Refundable absence', tier: 3, type: 'link' },
+          { id: 'rpt-cal-self-certified', label: 'Self-certified sickness', tier: 3, type: 'link' },
+          { id: 'rpt-cal-worked-hours', label: 'Worked hours overview', tier: 3, type: 'link' },
+        { id: 'rpt-employees', label: 'Employees', tier: 2, type: 'submenu'},
+          { id: 'rpt-emp-report', label: 'Employee report', tier: 3, type: 'link' },
+        { id: 'rpt-expense', label: 'Expense', tier: 2, type: 'submenu'},
+          { id: 'rpt-exp-data-extract', label: 'Data extract', tier: 3, type: 'link' },
+          { id: 'rpt-exp-driving-log', label: 'Driving log (admin)', tier: 3, type: 'link' },
+          { id: 'rpt-exp-claim-download', label: 'Claim download', tier: 3, type: 'link' },
+          { id: 'rpt-exp-emissions', label: 'Emissions', tier: 3, type: 'link' },
+        { id: 'rpt-payroll', label: 'Payroll', tier: 2, type: 'submenu'},
+          { id: 'rpt-pay-a-messages', label: 'A-messages', tier: 3, type: 'link' },
+          { id: 'rpt-pay-account-overview', label: 'Account overview', tier: 3, type: 'link' },
+          { id: 'rpt-pay-analytics', label: 'HRM Analytics', tier: 3, type: 'link' },
+          { id: 'rpt-pay-reconciliation', label: 'Reconcilliation reports', tier: 3, type: 'link' },
+          { id: 'rpt-pay-transactions', label: 'Transaction overview', tier: 3, type: 'link' },
+
+      // ── Settings ──
+      { id: 'settings', label: 'Settings', tier: 1, type: 'submenu'},
+        { id: 'set-calendar', label: 'Calendar', tier: 2, type: 'submenu'},
+          { id: 'set-cal-company', label: 'Company settings', tier: 3, type: 'link' },
+          { id: 'set-cal-cost-units', label: 'Cost unit types', tier: 3, type: 'link' },
+          { id: 'set-cal-employee', label: 'Employee settings', tier: 3, type: 'submenu'},
+            { id: 'set-cal-emp-bulk-time', label: 'Bulk update time agreements', tier: 4, type: 'link' },
+            { id: 'set-cal-emp-time-agreements', label: 'Time agreements', tier: 4, type: 'link' },
+          { id: 'set-cal-event-codes', label: 'Event codes', tier: 3, type: 'link' },
+          { id: 'set-cal-file-import', label: 'File import', tier: 3, type: 'link' },
+          { id: 'set-cal-special-days', label: 'Special days', tier: 3, type: 'link' },
+          { id: 'set-cal-time-rules', label: 'Time rules', tier: 3, type: 'submenu'},
+            { id: 'set-cal-tr-compensation', label: 'Compensation rules', tier: 4, type: 'link' },
+            { id: 'set-cal-tr-result-codes', label: 'Result codes', tier: 4, type: 'link' },
+            { id: 'set-cal-tr-time-agreements', label: 'Time agreements', tier: 4, type: 'link' },
+            { id: 'set-cal-tr-time-terminal', label: 'Time terminal', tier: 4, type: 'link' },
+        { id: 'set-employees', label: 'Employees', tier: 2, type: 'submenu'},
+          { id: 'set-emp-cars', label: 'Cars - New tab', tier: 3, type: 'link' },
+          { id: 'set-emp-cost-unit-import', label: 'Cost unit import', tier: 3, type: 'link' },
+          { id: 'set-emp-creditors', label: 'Creditors - New tab', tier: 3, type: 'link' },
+          { id: 'set-emp-tags', label: 'Tags', tier: 3, type: 'link' },
+        { id: 'set-expense', label: 'Expense', tier: 2, type: 'submenu'},
+          { id: 'set-exp-types', label: 'Types', tier: 3, type: 'submenu'},
+            { id: 'set-exp-typ-daily', label: 'Daily allowances', tier: 4, type: 'link' },
+            { id: 'set-exp-typ-abroad', label: 'Abroad destinations', tier: 4, type: 'link' },
+            { id: 'set-exp-typ-mileages', label: 'Mileages', tier: 4, type: 'link' },
+            { id: 'set-exp-typ-expenses', label: 'Expenses', tier: 4, type: 'link' },
+            { id: 'set-exp-typ-other', label: 'Other', tier: 4, type: 'link' },
+          { id: 'set-exp-company-config', label: 'Company configuration', tier: 3, type: 'submenu'},
+            { id: 'set-exp-cc-vat', label: 'VAT configuration', tier: 4, type: 'link' },
+            { id: 'set-exp-cc-claim-settings', label: 'Claim registration settings', tier: 4, type: 'link' },
+            { id: 'set-exp-cc-workflow', label: 'Workflow', tier: 4, type: 'link' },
+            { id: 'set-exp-cc-disable-claim', label: 'Disable claim registration', tier: 4, type: 'link' },
+          { id: 'set-exp-cost-units', label: 'Cost units', tier: 3, type: 'submenu'},
+            { id: 'set-exp-cu-types', label: 'Cost unit types', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-division', label: 'Division', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-sector', label: 'Sector', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-team', label: 'Team', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-location', label: 'Location', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-department', label: 'Department', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-custom', label: 'Custom', tier: 4, type: 'link' },
+          { id: 'set-exp-emp-groups', label: 'Employees and groups', tier: 3, type: 'submenu'},
+            { id: 'set-exp-eg-employees', label: 'Employees', tier: 4, type: 'link' },
+            { id: 'set-exp-eg-groups', label: 'Groups', tier: 4, type: 'link' },
+        { id: 'set-payroll', label: 'Payroll', tier: 2, type: 'submenu'},
+          { id: 'set-pay-account-types', label: 'Account types - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-accounts', label: 'Accounts - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-altinn', label: 'Altinn 3', tier: 3, type: 'link' },
+          { id: 'set-pay-anomaly', label: 'Anomaly detection', tier: 3, type: 'link' },
+          { id: 'set-pay-company', label: 'Company - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-enterprise-cert', label: 'Enterprise certificate', tier: 3, type: 'link' },
+          { id: 'set-pay-paycodes', label: 'Paycodes - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-payslip-config', label: 'Payslip configuration - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-pension', label: 'Pension - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-template', label: 'Template company', tier: 3, type: 'link' },
+          { id: 'set-pay-unions', label: 'Unions - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-wage-planner', label: 'Wage run planner', tier: 3, type: 'link' },
+          { id: 'set-pay-work-time', label: 'Work time agreements - New tab', tier: 3, type: 'link' },
+    ];
+
+    panel.setAttribute('items', JSON.stringify(HRM_ITEMS));
+
+    nav.addEventListener('hrm-menu-toggle',   () => panel.toggleAttribute('open'));
+    nav.addEventListener('hrm-company-click', () => console.log('company selector clicked'));
+    nav.addEventListener('hrm-feedback',      () => console.log('feedback clicked'));
+    nav.addEventListener('hrm-ai',            () => console.log('AI clicked'));
+    nav.addEventListener('hrm-notifications', () => console.log('notifications clicked'));
+    nav.addEventListener('hrm-breadcrumb-sibling', (e) => loadPage(e.detail.id));
+
+    const contentArea = document.getElementById('content-area');
+
+    // ── Breadcrumb: walk HRM_ITEMS ancestors by tier ──────
+    function findLinkSiblings(id) {
+      const idx = HRM_ITEMS.findIndex(i => i.id === id);
+      if (idx < 0) return [];
+      const tier = HRM_ITEMS[idx].tier || 1;
+      let parentStart = 0;
+      for (let i = idx - 1; i >= 0; i--) {
+        if ((HRM_ITEMS[i].tier || 1) < tier) { parentStart = i + 1; break; }
+      }
+      const siblings = [];
+      for (let i = parentStart; i < HRM_ITEMS.length; i++) {
+        const t = HRM_ITEMS[i].tier || 1;
+        if (t < tier) break;
+        if (t === tier && HRM_ITEMS[i].type === 'link' && HRM_ITEMS[i].id !== id) {
+          siblings.push({ id: HRM_ITEMS[i].id, label: HRM_ITEMS[i].label });
+        }
+      }
+      return siblings;
+    }
+
+    function computeBreadcrumb(id) {
+      const idx = HRM_ITEMS.findIndex(i => i.id === id);
+      if (idx < 0) return [];
+      const target = HRM_ITEMS[idx];
+      const path = [target];
+      let needed = (target.tier || 1) - 1;
+      for (let i = idx - 1; i >= 0 && needed >= 1; i--) {
+        if ((HRM_ITEMS[i].tier || 1) === needed) {
+          path.unshift(HRM_ITEMS[i]);
+          needed--;
+        }
+      }
+      return path.map(item => ({
+        id: item.id,
+        label: item.label,
+        siblings: findLinkSiblings(item.id),
+      }));
+    }
+
+    // ── Page-box variation generator ─────────────────────────
+    // Splits the content-area's .page-box into up to 3 horizontal + 3
+    // vertical cuts along any path (BSP). Each sub-box ≥ 80px in the
+    // split direction, 16px gap between siblings. Seeded by page id so
+    // each page has a stable layout across visits.
+    const PB_MIN = 80, PB_GAP = 16, PB_MAX_CUTS = 3, PB_MAX_TOTAL = 4, PB_STOP_PROB = 0.25;
+
+    function pbMakeRng(seed) {
+      let s = 2166136261;
+      for (let i = 0; i < seed.length; i++) {
+        s ^= seed.charCodeAt(i);
+        s = Math.imul(s, 16777619);
+      }
+      return function () {
+        s |= 0; s = s + 0x6D2B79F5 | 0;
+        let t = Math.imul(s ^ s >>> 15, 1 | s);
+        t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t;
+        return ((t ^ t >>> 14) >>> 0) / 4294967296;
+      };
+    }
+
+    function pbBuild(w, h, hLeft, vLeft, budget, rng, depth) {
+      const canH = hLeft > 0 && h >= PB_MIN * 2 + PB_GAP;
+      const canV = vLeft > 0 && w >= PB_MIN * 2 + PB_GAP;
+      if (!canH && !canV) return { leaf: true };
+      if (budget.n <= 0) return { leaf: true };
+      if (depth > 0 && rng() < PB_STOP_PROB) return { leaf: true };
+
+      const dir = (canH && canV) ? (rng() < 0.5 ? 'h' : 'v') : (canH ? 'h' : 'v');
+      budget.n -= 1;
+
+      if (dir === 'h') {
+        const max = h - PB_GAP - PB_MIN;
+        const topH = PB_MIN + rng() * (max - PB_MIN);
+        const botH = h - PB_GAP - topH;
+        return {
+          split: 'column',
+          ratios: [topH, botH],
+          children: [
+            pbBuild(w, topH, hLeft - 1, vLeft, budget, rng, depth + 1),
+            pbBuild(w, botH, hLeft - 1, vLeft, budget, rng, depth + 1),
+          ],
+        };
+      }
+      const max = w - PB_GAP - PB_MIN;
+      const leftW = PB_MIN + rng() * (max - PB_MIN);
+      const rightW = w - PB_GAP - leftW;
+      return {
+        split: 'row',
+        ratios: [leftW, rightW],
+        children: [
+          pbBuild(leftW, h, hLeft, vLeft - 1, budget, rng, depth + 1),
+          pbBuild(rightW, h, hLeft, vLeft - 1, budget, rng, depth + 1),
+        ],
+      };
+    }
+
+    function pbRender(node) {
+      if (node.leaf) {
+        const el = document.createElement('div');
+        el.className = 'page-box';
+        el.style.flex = '1 1 0';
+        return el;
+      }
+      const wrap = document.createElement('div');
+      wrap.className = 'page-split';
+      wrap.style.display = 'flex';
+      wrap.style.flexDirection = node.split;
+      wrap.style.gap = PB_GAP + 'px';
+      wrap.style.flex = '1 1 0';
+      node.children.forEach((c, i) => {
+        const childEl = pbRender(c);
+        childEl.style.flex = `${node.ratios[i]} ${node.ratios[i]} 0`;
+        wrap.appendChild(childEl);
+      });
+      return wrap;
+    }
+
+    function applyPageVariation(seed) {
+      const box = contentArea.querySelector('.page-box');
+      if (!box) return;
+      const w = contentArea.clientWidth;
+      const h = contentArea.clientHeight;
+      if (w < PB_MIN || h < PB_MIN) return;
+      const rng = pbMakeRng(seed || 'home');
+      const tree = pbBuild(w, h, PB_MAX_CUTS, PB_MAX_CUTS, { n: PB_MAX_TOTAL }, rng, 0);
+      box.replaceWith(pbRender(tree));
+    }
+
+    async function loadPage(id) {
+      try {
+        const res = await fetch(`./pages/${id}.html`);
+        if (!res.ok) throw new Error(`${res.status}`);
+        contentArea.innerHTML = await res.text();
+        panel.setAttribute('active-item', id);
+        nav.setAttribute('breadcrumbs', JSON.stringify(computeBreadcrumb(id)));
+        requestAnimationFrame(() => applyPageVariation(id));
+      } catch (err) {
+        contentArea.innerHTML = `<!-- no page found for ${id} -->`;
+        console.warn('page not found:', id, err);
+      }
+    }
+
+    loadPage('pay-overview');
+
+    panel.addEventListener('hrm-panel-close',      () => panel.removeAttribute('open'));
+    panel.addEventListener('hrm-nav-item',         (e) => { console.log('nav item:', e.detail); loadPage(e.detail.id); panel.removeAttribute('open'); });
+    panel.addEventListener('hrm-module-toggle',    () => console.log('module switcher toggled'));
+    panel.addEventListener('hrm-module-select',    (e) => console.log('module selected:', e.detail));
+    panel.addEventListener('hrm-profile',          () => console.log('my profile clicked'));
+    panel.addEventListener('hrm-logout',           () => console.log('log out clicked'));
+    panel.addEventListener('hrm-user-panel-toggle',() => console.log('user panel toggled'));
+  </script>
+
+</body>
+</html>

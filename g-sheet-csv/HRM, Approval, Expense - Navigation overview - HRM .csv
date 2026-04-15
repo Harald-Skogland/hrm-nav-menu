@@ -1,0 +1,110 @@
+Module level,Tier 1,Tier 2,Tier 3,Tier 4
+HRM,Calendar,Event registration,,
+,,Timesheets,,
+,,Planned leaves,,
+,,Requests overview,,
+,,Vacation management,,
+,,Roster,,
+,,Reports,Reports overview,
+,,,Absence in percent,
+,,,Absence statistics,
+,,,All my registrations,
+,,,All registrations,
+,,,Balances,Flexitime
+,,,,Saved overtime
+,,,,Vacation balances
+,,,Personnel list,
+,,,Refundable absence,
+,,,Self certified sickness,
+,,,Worked hours overview,
+,Employees,Employee list,,
+,,Employee card,,
+,,Historic bulk operations,,
+,,Import vacation balances,,
+,,Import absences,,
+,Expense,Home,,
+,,Additional services,,
+,,Reports,Data extract,
+,,,Driving log (admin),
+,,,Claim download,
+,,,Emissions,
+,Payroll,Overview of all companies,,
+,,Transactions,,
+,,Tasks,,
+,,Paycodes,,
+,,Digital Income Form,,
+,,Reports,A-messages,
+,,,Accounting overview,
+,,,Employee report,
+,,,HRM analytics,
+,,,Reconcilliation reports,
+,,,Reports,
+,,,Transaction overview,
+,Payroll Portal,Dialogue,,
+,,Employees,,
+,,Documents,,
+,Reports,Calendar,Absence in percent,
+,,,Absence statistics,
+,,,All registrations,
+,,,Balances,
+,,,Personnel list,
+,,,Refundable absence,
+,,,Self-certified sickness,
+,,,Worked hours overview,
+,,Employees,Employee report,
+,,Expense,Data extract,
+,,,Driving log (admin),
+,,,Claim download,
+,,,Emissions,
+,,Payroll,A-messages,
+,,,Account overview,
+,,,HRM Analytics,
+,,,Reconcilliation reports,
+,,,Transaction overview,
+,Settings,Calendar,Company settings,
+,,,Cost unit types,
+,,,Employee settings,Bulk update time agreements
+,,,,Time agreements
+,,,Event codes,
+,,,File import,
+,,,Special days,
+,,,Time rules,Compensation rules
+,,,,Result codes
+,,,,Time agreements
+,,,,Time terminal
+,,Employees,Cars - New tab,
+,,,Cost unit import,
+,,,Creditors - New tab,
+,,,Tags,
+,,Expense,Types,Daily allowances
+,,,,Abroad destinations
+,,,,Mileages
+,,,,Expenses
+,,,,Other
+,,,Company configuration,VAT configuration
+,,,,Claim registration settings
+,,,,Workflow
+,,,,Disable claim registration
+,,,Cost units,Cost unit types
+,,,,_ Division
+,,,,_ Sector
+,,,,_ Team
+,,,,_ Location
+,,,,_ Department
+,,,,_ Custom
+,,,Employees and groups,Employees
+,,,,Groups
+,,Payroll,Account types - New tab,
+,,,Accounts - New tab,
+,,,Altinn 3,
+,,,Anomaly detection,
+,,,Company - New tab,
+,,,Enterprise certificate,
+,,,Paycodes - New tab,
+,,,Payslip configuration - New tab,
+,,,Pension - New tab,
+,,,Template company,
+,,,Unions - New tab,
+,,,Wage run planner,
+,,,Wage run planner,
+,,,Work time agreements - New tab,
