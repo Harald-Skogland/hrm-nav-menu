@@ -5,18 +5,6 @@ HRM,Calendar,Event registration,,
 ,,Requests overview,,
 ,,Vacation management,,
 ,,Roster,,
-,,Reports,Reports overview,
-,,,Absence in percent,
-,,,Absence statistics,
-,,,All my registrations,
-,,,All registrations,
-,,,Balances,Flexitime
-,,,,Saved overtime
-,,,,Vacation balances
-,,,Personnel list,
-,,,Refundable absence,
-,,,Self certified sickness,
-,,,Worked hours overview,
 ,Employees,Employee list,,
 ,,Employee card,,
 ,,Historic bulk operations,,
@@ -46,7 +34,9 @@ HRM,Calendar,Event registration,,
 ,Reports,Calendar,Absence in percent,
 ,,,Absence statistics,
 ,,,All registrations,
-,,,Balances,
+,,,Balances,Flexitime
+,,,,Saved overtime
+,,,,Vacation balances
 ,,,Personnel list,
 ,,,Refundable absence,
 ,,,Self-certified sickness,

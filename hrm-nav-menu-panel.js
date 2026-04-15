@@ -116,8 +116,12 @@ const PANEL_STYLES = `
     width: 100%;
     text-align: left;
   }
-  .module-header:hover { background: var(--ga-color-surface-page); }
-  .module-header.open {
+  .module-header:hover { background: var(--ga-color-surface-highlight); }
+  .module-header:active { background: var(--ga-color-surface-highlight); }
+  .module-header:active .module-name { font-weight: 600; }
+  .module-header.open,
+  .module-header.open:hover,
+  .module-header.open:active {
     background: var(--ga-color-surface-selected);
   }
   .module-header.open .module-name { font-weight: 700; }
@@ -415,8 +419,14 @@ const PANEL_STYLES = `
     width: 100%;
     text-align: left;
   }
-  .footer-user-row.open { background: var(--ga-color-surface-selected); }
-  .footer-user-row:hover { filter: brightness(0.97); }
+  .footer-user-row:hover { background: var(--ga-color-surface-highlight); }
+  .footer-user-row:active { background: var(--ga-color-surface-highlight); }
+  .footer-user-row:active .user-name { font-weight: 600; }
+  .footer-user-row.open,
+  .footer-user-row.open:hover,
+  .footer-user-row.open:active {
+    background: var(--ga-color-surface-selected);
+  }
 
   .user-avatar {
     width: 40px;
@@ -443,14 +453,14 @@ const PANEL_STYLES = `
     flex: 1;
     font-size: var(--ga-text-md-size);
     line-height: var(--ga-text-md-lineheight);
-    font-weight: 400;
+    font-weight: 500;
     color: var(--ga-color-text-action);
     letter-spacing: -0.096px;
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
   }
-  .footer-user-row.open .user-name { font-weight: 600; }
+  .footer-user-row.open .user-name { font-weight: 700; }
 
   .user-toggle {
     color: var(--ga-color-text-action);
@@ -505,9 +515,45 @@ class HrmNavMenuPanel extends HTMLElement {
     this._bindEvents();
   }
 
-  attributeChangedCallback() {
+  attributeChangedCallback(name, oldValue, newValue) {
+    if (name === 'open') {
+      const becoming = newValue !== null;
+      const was = oldValue !== null;
+      if (becoming && !was) {
+        // Opening: close switcher/footer and expand path to active
+        this._switcherOpen = false;
+        this._footerOpen = false;
+        this._expandPathToActive();
+      } else if (!becoming && was) {
+        // Closing: full reset
+        this._switcherOpen = false;
+        this._footerOpen = false;
+        this._expandedIds.clear();
+      }
+    }
+    if (name === 'active-item' && this.hasAttribute('open')) {
+      this._expandPathToActive();
+    }
     if (this.shadowRoot.innerHTML) {
       this._render();
+    }
+  }
+
+  _expandPathToActive() {
+    this._expandedIds.clear();
+    const id = this._activeItem;
+    if (!id) return;
+    const items = this._items;
+    const idx = items.findIndex(i => i.id === id);
+    if (idx < 0) return;
+    const targetTier = items[idx].tier || 1;
+    let needed = targetTier - 1;
+    for (let i = idx - 1; i >= 0 && needed >= 1; i--) {
+      const t = items[i].tier || 1;
+      if (t === needed && items[i].type === 'submenu') {
+        this._expandedIds.add(items[i].id);
+        needed--;
+      }
     }
   }
 
@@ -725,7 +771,9 @@ class HrmNavMenuPanel extends HTMLElement {
         return;
       }
       if (action === 'module-toggle') {
-        this._switcherOpen = !this._switcherOpen;
+        const opening = !this._switcherOpen;
+        this._switcherOpen = opening;
+        if (opening) this._footerOpen = false;
         this._render();
         this.dispatchEvent(new CustomEvent('hrm-module-toggle', { bubbles: true, composed: true }));
         return;
@@ -740,6 +788,9 @@ class HrmNavMenuPanel extends HTMLElement {
         return;
       }
       if (action === 'nav-item') {
+        // Any nav-menu interaction collapses switcher/footer.
+        this._switcherOpen = false;
+        this._footerOpen = false;
         if (btn.dataset.type === 'submenu') {
           this._handleSubmenuClick(btn.dataset.id);
           return;
@@ -759,7 +810,9 @@ class HrmNavMenuPanel extends HTMLElement {
         return;
       }
       if (action === 'footer-toggle') {
-        this._footerOpen = !this._footerOpen;
+        const opening = !this._footerOpen;
+        this._footerOpen = opening;
+        if (opening) this._switcherOpen = false;
         this._render();
         this.dispatchEvent(new CustomEvent('hrm-user-panel-toggle', { bubbles: true, composed: true }));
         return;

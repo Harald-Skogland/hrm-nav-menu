@@ -21,7 +21,8 @@ const ICON = {
   chevronsUpDown: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>`,
   chevronDown: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
   chevronRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
-  sparkles: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/></svg>`,
+  chevronDown16: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
+  sparkles: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>`,
   bell: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
 };
 
@@ -221,8 +222,9 @@ const STYLES = `
     position: absolute;
     top: calc(100% + 4px);
     left: 0;
-    min-width: 160px;
-    max-width: 512px;
+    width: 220px;
+    max-height: calc(100vh - 120px);
+    overflow-y: auto;
     background: var(--ga-color-surface-primary);
     border: 1px solid var(--ga-color-border-tertiary);
     border-radius: var(--ga-radius-default);
@@ -255,6 +257,7 @@ const STYLES = `
     text-align: left;
     border-radius: var(--ga-radius-default);
     white-space: nowrap;
+    flex-shrink: 0;
   }
   .bc-sibling-item:hover {
     background: var(--ga-color-surface-action-hover-2);
@@ -267,7 +270,14 @@ const STYLES = `
     white-space: nowrap;
     max-width: 360px;
   }
-  .bc-sibling-item svg { flex-shrink: 0; }
+  .bc-sibling-chevron {
+    display: inline-flex;
+    align-items: center;
+    flex-shrink: 0;
+    color: inherit;
+    pointer-events: none;
+  }
+  .bc-sibling-item svg { flex-shrink: 0; display: block; }
 
   /* ── Right side ────────────────────────────────────── */
   .right {
@@ -347,6 +357,7 @@ class HrmNavMenu extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
+    this._siblingExpanded = {};
   }
 
   connectedCallback() {
@@ -354,7 +365,8 @@ class HrmNavMenu extends HTMLElement {
     this._bindEvents();
   }
 
-  attributeChangedCallback() {
+  attributeChangedCallback(name) {
+    if (name === 'breadcrumbs') this._siblingExpanded = {};
     if (this.shadowRoot.innerHTML) {
       this._render();
     }
@@ -394,15 +406,9 @@ class HrmNavMenu extends HTMLElement {
         ? `<button type="button" class="${cls} bc-trigger" data-chevron-index="${i}" aria-haspopup="menu" aria-expanded="false">${innerContent}</button>`
         : `<span class="${cls}">${innerContent}</span>`;
 
+      const expandedSet = this._siblingExpanded[i] || new Set();
       const menu = hasSiblings
-        ? `<div class="bc-sibling-menu" data-menu-index="${i}" hidden>${
-            siblings.map(s => `
-              <button class="bc-sibling-item" data-sibling-id="${this._esc(s.id)}">
-                <span class="bc-sibling-label">${this._esc(s.label)}</span>
-                ${ICON.chevronRight}
-              </button>
-            `).join('')
-          }</div>`
+        ? `<div class="bc-sibling-menu" data-menu-index="${i}" hidden>${this._renderSiblingMenuContent(siblings, expandedSet)}</div>`
         : '';
 
       return `
@@ -420,6 +426,100 @@ class HrmNavMenu extends HTMLElement {
     return String(s == null ? '' : s).replace(/[&<>"']/g, c =>
       ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])
     );
+  }
+
+  _flattenVisibleSiblings(tree, expandedSet, depth = 0) {
+    const rows = [];
+    for (const item of tree) {
+      const isSubmenu = item.type === 'submenu';
+      const isExpanded = isSubmenu && expandedSet.has(item.id);
+      rows.push({
+        id: item.id,
+        label: item.label,
+        type: item.type,
+        depth,
+        expanded: isExpanded,
+      });
+      if (isSubmenu && isExpanded && item.children) {
+        rows.push(...this._flattenVisibleSiblings(item.children, expandedSet, depth + 1));
+      }
+    }
+    return rows;
+  }
+
+  _renderSiblingMenuContent(tree, expandedSet) {
+    const rows = this._flattenVisibleSiblings(tree, expandedSet);
+    return rows.map(row => {
+      const isSubmenu = row.type === 'submenu';
+      const chevronSvg = isSubmenu
+        ? (row.expanded ? ICON.chevronDown16 : ICON.chevronRight)
+        : '';
+      const chevron = chevronSvg
+        ? `<span class="bc-sibling-chevron">${chevronSvg}</span>`
+        : '';
+      const indent = 12 + row.depth * 16;
+      return `
+        <button class="bc-sibling-item" data-sibling-id="${this._esc(row.id)}" data-sibling-type="${row.type}" style="padding-left: ${indent}px">
+          <span class="bc-sibling-label">${this._esc(row.label)}</span>
+          ${chevron}
+        </button>
+      `;
+    }).join('');
+  }
+
+  _findTreePath(tree, id, path = []) {
+    for (const node of tree) {
+      const next = path.concat(node);
+      if (node.id === id) return next;
+      if (node.children) {
+        const found = this._findTreePath(node.children, id, next);
+        if (found) return found;
+      }
+    }
+    return null;
+  }
+
+  _collapseDescendants(node, expanded) {
+    if (node.type !== 'submenu') return;
+    expanded.delete(node.id);
+    if (node.children) {
+      for (const c of node.children) this._collapseDescendants(c, expanded);
+    }
+  }
+
+  _toggleSiblingFolder(menuIdx, id) {
+    const crumb = this._breadcrumbs[menuIdx];
+    if (!crumb || !Array.isArray(crumb.siblings)) return;
+    const tree = crumb.siblings;
+    const expanded = this._siblingExpanded[menuIdx] || new Set();
+    const path = this._findTreePath(tree, id);
+    if (!path) return;
+    const clicked = path[path.length - 1];
+    const isExpanding = !expanded.has(id);
+    const peers = path.length === 1 ? tree : path[path.length - 2].children;
+
+    if (isExpanding) {
+      // Collapse peer folders at same level (accordion)
+      for (const peer of peers) {
+        if (peer.id !== id && peer.type === 'submenu') {
+          this._collapseDescendants(peer, expanded);
+        }
+      }
+      expanded.add(id);
+    } else {
+      this._collapseDescendants(clicked, expanded);
+    }
+
+    this._siblingExpanded[menuIdx] = expanded;
+    this._rerenderSiblingMenu(menuIdx);
+  }
+
+  _rerenderSiblingMenu(menuIdx) {
+    const menu = this.shadowRoot.querySelector(`.bc-sibling-menu[data-menu-index="${menuIdx}"]`);
+    const crumb = this._breadcrumbs[menuIdx];
+    if (!menu || !crumb) return;
+    const expanded = this._siblingExpanded[menuIdx] || new Set();
+    menu.innerHTML = this._renderSiblingMenuContent(crumb.siblings, expanded);
   }
 
   _applyTruncation() {
@@ -512,10 +612,16 @@ class HrmNavMenu extends HTMLElement {
         this._toggleSiblingMenu(trigger.dataset.chevronIndex);
         return;
       }
-      // Sibling menu item → dispatch and close
+      // Sibling menu item → folder expands; link navigates + closes
       const sibling = e.target.closest('.bc-sibling-item');
       if (sibling) {
         e.stopPropagation();
+        const menu = sibling.closest('.bc-sibling-menu');
+        const menuIdx = menu ? menu.dataset.menuIndex : null;
+        if (sibling.dataset.siblingType === 'submenu') {
+          if (menuIdx != null) this._toggleSiblingFolder(menuIdx, sibling.dataset.siblingId);
+          return;
+        }
         this._closeAllSiblingMenus();
         this.dispatchEvent(new CustomEvent('hrm-breadcrumb-sibling', {
           bubbles: true, composed: true,

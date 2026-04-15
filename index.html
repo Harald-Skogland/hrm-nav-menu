@@ -21,8 +21,8 @@
       border-radius: 4px;
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=4" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=4" defer></script>
+  <script src="./hrm-nav-menu.js?v=11" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=11" defer></script>
 </head>
 <body>
 
@@ -53,20 +53,6 @@
         { id: 'cal-requests-overview', label: 'Requests overview', tier: 2, type: 'link' },
         { id: 'cal-vacation-management', label: 'Vacation management', tier: 2, type: 'link' },
         { id: 'cal-roster', label: 'Roster', tier: 2, type: 'link' },
-        { id: 'cal-reports', label: 'Reports', tier: 2, type: 'submenu'},
-          { id: 'cal-rpt-overview', label: 'Reports overview', tier: 3, type: 'link' },
-          { id: 'cal-rpt-absence-pct', label: 'Absence in percent', tier: 3, type: 'link' },
-          { id: 'cal-rpt-absence-stats', label: 'Absence statistics', tier: 3, type: 'link' },
-          { id: 'cal-rpt-my-registrations', label: 'All my registrations', tier: 3, type: 'link' },
-          { id: 'cal-rpt-all-registrations', label: 'All registrations', tier: 3, type: 'link' },
-          { id: 'cal-rpt-balances', label: 'Balances', tier: 3, type: 'submenu'},
-            { id: 'cal-rpt-bal-flexitime', label: 'Flexitime', tier: 4, type: 'link' },
-            { id: 'cal-rpt-bal-saved-overtime', label: 'Saved overtime', tier: 4, type: 'link' },
-            { id: 'cal-rpt-bal-vacation', label: 'Vacation balances', tier: 4, type: 'link' },
-          { id: 'cal-rpt-personnel-list', label: 'Personnel list', tier: 3, type: 'link' },
-          { id: 'cal-rpt-refundable-absence', label: 'Refundable absence', tier: 3, type: 'link' },
-          { id: 'cal-rpt-self-certified', label: 'Self certified sickness', tier: 3, type: 'link' },
-          { id: 'cal-rpt-worked-hours', label: 'Worked hours overview', tier: 3, type: 'link' },
 
       // ── Employees ──
       { id: 'employees', label: 'Employees', tier: 1, type: 'submenu'},
@@ -114,7 +100,10 @@
           { id: 'rpt-cal-absence-pct', label: 'Absence in percent', tier: 3, type: 'link' },
           { id: 'rpt-cal-absence-stats', label: 'Absence statistics', tier: 3, type: 'link' },
           { id: 'rpt-cal-all-registrations', label: 'All registrations', tier: 3, type: 'link' },
-          { id: 'rpt-cal-balances', label: 'Balances', tier: 3, type: 'link' },
+          { id: 'rpt-cal-balances', label: 'Balances', tier: 3, type: 'submenu'},
+            { id: 'rpt-cal-bal-flexitime', label: 'Flexitime', tier: 4, type: 'link' },
+            { id: 'rpt-cal-bal-saved-overtime', label: 'Saved overtime', tier: 4, type: 'link' },
+            { id: 'rpt-cal-bal-vacation', label: 'Vacation balances', tier: 4, type: 'link' },
           { id: 'rpt-cal-personnel-list', label: 'Personnel list', tier: 3, type: 'link' },
           { id: 'rpt-cal-refundable', label: 'Refundable absence', tier: 3, type: 'link' },
           { id: 'rpt-cal-self-certified', label: 'Self-certified sickness', tier: 3, type: 'link' },
@@ -168,12 +157,12 @@
             { id: 'set-exp-cc-disable-claim', label: 'Disable claim registration', tier: 4, type: 'link' },
           { id: 'set-exp-cost-units', label: 'Cost units', tier: 3, type: 'submenu'},
             { id: 'set-exp-cu-types', label: 'Cost unit types', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-division', label: 'Division', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-sector', label: 'Sector', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-team', label: 'Team', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-location', label: 'Location', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-department', label: 'Department', tier: 4, type: 'link' },
-            { id: 'set-exp-cu-custom', label: 'Custom', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-division', label: '_ Division', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-sector', label: '_ Sector', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-team', label: '_ Team', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-location', label: '_ Location', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-department', label: '_ Department', tier: 4, type: 'link' },
+            { id: 'set-exp-cu-custom', label: '_ Custom', tier: 4, type: 'link' },
           { id: 'set-exp-emp-groups', label: 'Employees and groups', tier: 3, type: 'submenu'},
             { id: 'set-exp-eg-employees', label: 'Employees', tier: 4, type: 'link' },
             { id: 'set-exp-eg-groups', label: 'Groups', tier: 4, type: 'link' },
@@ -205,10 +194,33 @@
     const contentArea = document.getElementById('content-area');
 
     // ── Breadcrumb: walk HRM_ITEMS ancestors by tier ──────
-    function findLinkSiblings(id) {
+    // Build nested subtree (direct children of item at `idx`, recursively)
+    function buildSubtree(idx) {
+      const parentTier = HRM_ITEMS[idx].tier || 1;
+      const children = [];
+      for (let i = idx + 1; i < HRM_ITEMS.length; i++) {
+        const t = HRM_ITEMS[i].tier || 1;
+        if (t <= parentTier) break;
+        if (t === parentTier + 1) {
+          const node = {
+            id: HRM_ITEMS[i].id,
+            label: HRM_ITEMS[i].label,
+            type: HRM_ITEMS[i].type,
+          };
+          if (HRM_ITEMS[i].type === 'submenu') {
+            node.children = buildSubtree(i);
+          }
+          children.push(node);
+        }
+      }
+      return children;
+    }
+
+    function findSiblings(id) {
       const idx = HRM_ITEMS.findIndex(i => i.id === id);
       if (idx < 0) return [];
       const tier = HRM_ITEMS[idx].tier || 1;
+      // Parent boundary (first item with tier < current when walking back)
       let parentStart = 0;
       for (let i = idx - 1; i >= 0; i--) {
         if ((HRM_ITEMS[i].tier || 1) < tier) { parentStart = i + 1; break; }
@@ -217,8 +229,16 @@
       for (let i = parentStart; i < HRM_ITEMS.length; i++) {
         const t = HRM_ITEMS[i].tier || 1;
         if (t < tier) break;
-        if (t === tier && HRM_ITEMS[i].type === 'link' && HRM_ITEMS[i].id !== id) {
-          siblings.push({ id: HRM_ITEMS[i].id, label: HRM_ITEMS[i].label });
+        if (t === tier && HRM_ITEMS[i].id !== id) {
+          const node = {
+            id: HRM_ITEMS[i].id,
+            label: HRM_ITEMS[i].label,
+            type: HRM_ITEMS[i].type,
+          };
+          if (HRM_ITEMS[i].type === 'submenu') {
+            node.children = buildSubtree(i);
+          }
+          siblings.push(node);
         }
       }
       return siblings;
@@ -239,7 +259,7 @@
       return path.map(item => ({
         id: item.id,
         label: item.label,
-        siblings: findLinkSiblings(item.id),
+        siblings: findSiblings(item.id),
       }));
     }
 
