@@ -157,6 +157,11 @@ const STYLES = `
     text-decoration: none;
     border-radius: var(--ga-radius-default);
   }
+  /* .bc-trigger uses font: inherit, which resets font-weight. The button
+     form of an item then loses the weight from .bc-ancestor / .bc-current.
+     Restore it with a higher-specificity rule. */
+  .bc-trigger.bc-ancestor { font-weight: 400; }
+  .bc-trigger.bc-current  { font-weight: 600; }
   /* Any trigger (link or current-page) that's hovered: underline the label */
   .bc-trigger:hover .bc-label {
     text-decoration: underline;

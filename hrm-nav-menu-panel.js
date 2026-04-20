@@ -166,15 +166,6 @@ const PANEL_STYLES = `
     padding-bottom: 8px;
   }
 
-  .switcher-label {
-    padding: 4px 16px;
-    font-size: var(--ga-text-sm-size);
-    font-weight: 600;
-    line-height: var(--ga-text-sm-lineheight);
-    color: var(--ga-color-text-disable-selected);
-    white-space: nowrap;
-  }
-
   .switcher-item {
     display: flex;
     flex-direction: column;
@@ -847,7 +838,6 @@ class HrmNavMenuPanel extends HTMLElement {
     if (!modules.length) return '';
     return `
       <div class="module-switcher-dropdown">
-        <div class="switcher-label">CHOOSE A SERVICE</div>
         ${modules.map(m => `
           <button class="switcher-item" data-action="module-select" data-id="${m.id}" data-name="${m.name}">
             <span class="switcher-item-name">${m.name}</span>

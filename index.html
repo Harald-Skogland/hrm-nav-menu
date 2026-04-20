@@ -41,7 +41,7 @@
       border: 1px solid #d5d5da;
       border-radius: 12px;
       padding: 16px;
-      width: 240px;
+      width: 380px;
       box-shadow: 0 12px 32px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
@@ -100,6 +100,34 @@
       padding-left: 20px;
       margin-top: 2px;
     }
+    .config-columns {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .config-col-presets {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex-shrink: 0;
+      min-width: 124px;
+    }
+    .config-col-content {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 1;
+      min-width: 0;
+    }
+    /* Preset lock: content-column checkboxes look disabled but remain clickable.
+       Clicking one applies the toggle and switches the preset back to Custom. */
+    .config-widget.preset-locked .config-col-content label,
+    .config-widget.preset-locked .config-col-content input[type="checkbox"] {
+      cursor: not-allowed;
+    }
+    .config-widget.preset-locked .config-col-content input[type="checkbox"] + span {
+      opacity: 0.45;
+    }
     .config-button {
       display: inline-flex;
       align-items: center;
@@ -134,8 +162,8 @@
       16.5%, 49.5%, 83% { background-color: #fde68a; }
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=26" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=26" defer></script>
+  <script src="./hrm-nav-menu.js?v=30" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=30" defer></script>
 </head>
 <body>
 
@@ -156,19 +184,29 @@
   <!-- Config widget: dev-only tool for switching menu variants. Not part of the shipping UI. -->
   <div class="config-widget" id="config-widget">
     <div class="config-content">
-      <p class="config-heading">Choose which content is enabled to the user</p>
-      <div class="config-row" data-row="approval">
-        <label><input type="checkbox" data-cfg="approval" checked><span>Approval</span></label>
-      </div>
-      <div class="config-row" data-row="hrm">
-        <label><input type="checkbox" data-cfg="hrm" checked><span>HRM</span></label>
-      </div>
-      <div class="config-children">
-        <div class="config-row" data-row="hrm.calendar"><label><input type="checkbox" data-cfg="hrm.calendar" checked><span>Calendar</span></label></div>
-        <div class="config-row" data-row="hrm.employees"><label><input type="checkbox" data-cfg="hrm.employees" checked><span>Employees</span></label></div>
-        <div class="config-row" data-row="hrm.expense"><label><input type="checkbox" data-cfg="hrm.expense" checked><span>Expense</span></label></div>
-        <div class="config-row" data-row="hrm.payroll"><label><input type="checkbox" data-cfg="hrm.payroll" checked><span>Payroll</span></label></div>
-        <div class="config-row" data-row="hrm.payroll-portal"><label><input type="checkbox" data-cfg="hrm.payroll-portal" checked><span>Payroll Portal</span></label></div>
+      <div class="config-columns">
+        <div class="config-col-presets">
+          <p class="config-heading">Presets</p>
+          <div class="config-row"><label><input type="radio" name="preset" value="custom" checked><span>Custom</span></label></div>
+          <div class="config-row"><label><input type="radio" name="preset" value="payroll-admin"><span>Payroll admin</span></label></div>
+          <div class="config-row"><label><input type="radio" name="preset" value="manager"><span>Manager</span></label></div>
+        </div>
+        <div class="config-col-content">
+          <p class="config-heading">Content enabled</p>
+          <div class="config-row" data-row="approval">
+            <label><input type="checkbox" data-cfg="approval" checked><span>Approval</span></label>
+          </div>
+          <div class="config-row" data-row="hrm">
+            <label><input type="checkbox" data-cfg="hrm" checked><span>HRM</span></label>
+          </div>
+          <div class="config-children">
+            <div class="config-row" data-row="hrm.calendar"><label><input type="checkbox" data-cfg="hrm.calendar" checked><span>Calendar</span></label></div>
+            <div class="config-row" data-row="hrm.employees"><label><input type="checkbox" data-cfg="hrm.employees" checked><span>Employees</span></label></div>
+            <div class="config-row" data-row="hrm.expense"><label><input type="checkbox" data-cfg="hrm.expense" checked><span>Expense</span></label></div>
+            <div class="config-row" data-row="hrm.payroll"><label><input type="checkbox" data-cfg="hrm.payroll" checked><span>Payroll</span></label></div>
+            <div class="config-row" data-row="hrm.payroll-portal"><label><input type="checkbox" data-cfg="hrm.payroll-portal" checked><span>Payroll Portal</span></label></div>
+          </div>
+        </div>
       </div>
       <p class="config-tip">Tip: Use <span class="config-shortcut">Command+K</span> to open menu and search ⚡</p>
     </div>
@@ -563,6 +601,30 @@
     const configState = {};
     configCheckboxes.forEach(cb => { configState[cb.dataset.cfg] = cb.checked; });
 
+    // Presets — overwrite configState when selected; Custom preserves free-form state.
+    const PRESETS = {
+      'payroll-admin': {
+        approval: true,
+        hrm: true,
+        'hrm.calendar': true,
+        'hrm.employees': true,
+        'hrm.expense': true,
+        'hrm.payroll': true,
+        'hrm.payroll-portal': true,
+      },
+      'manager': {
+        approval: true,
+        hrm: true,
+        'hrm.calendar': true,
+        'hrm.employees': false,
+        'hrm.expense': true,
+        'hrm.payroll': false,
+        'hrm.payroll-portal': true,
+      },
+    };
+    let currentPreset = 'custom';
+    let customMemory = null;
+
     const HRM_CHILD_LABELS = {
       'hrm.calendar':       'Calendar',
       'hrm.employees':      'Employees',
@@ -630,11 +692,46 @@
     }
 
     function updateChildEnabledStates() {
+      // Native disable only applies in Custom mode; preset-locked uses CSS-only locking.
       const hrmOn = configState.hrm;
+      const customMode = currentPreset === 'custom';
       configWidget.querySelectorAll('input[data-cfg^="hrm."]').forEach(cb => {
-        cb.disabled = !hrmOn;
+        cb.disabled = customMode && !hrmOn;
       });
     }
+
+    function syncCheckboxesFromState() {
+      configCheckboxes.forEach(cb => {
+        const key = cb.dataset.cfg;
+        if (key in configState) cb.checked = configState[key];
+      });
+    }
+
+    function setPreset(newPreset) {
+      if (newPreset === currentPreset) return;
+      if (newPreset === 'custom') {
+        if (customMemory) {
+          Object.assign(configState, customMemory);
+          customMemory = null;
+        }
+      } else {
+        if (currentPreset === 'custom') {
+          customMemory = Object.assign({}, configState);
+        }
+        Object.assign(configState, PRESETS[newPreset]);
+      }
+      currentPreset = newPreset;
+      syncCheckboxesFromState();
+      const radio = configWidget.querySelector(`input[name="preset"][value="${newPreset}"]`);
+      if (radio) radio.checked = true;
+      configWidget.classList.toggle('preset-locked', newPreset !== 'custom');
+      updateChildEnabledStates();
+      applyConfig();
+    }
+
+    configWidget.querySelectorAll('input[name="preset"]').forEach(r => {
+      r.addEventListener('change', () => { if (r.checked) setPreset(r.value); });
+    });
 
     function flashRow(rowEl) {
       if (!rowEl) return;
@@ -664,6 +761,18 @@
         }
 
         configState[key] = newChecked;
+
+        // Clicking a checkbox while a preset is active: accept the toggle
+        // and drop back to Custom. The resulting state becomes the new
+        // Custom state; no restore from customMemory.
+        if (currentPreset !== 'custom') {
+          currentPreset = 'custom';
+          customMemory = null;
+          const customRadio = configWidget.querySelector('input[name="preset"][value="custom"]');
+          if (customRadio) customRadio.checked = true;
+          configWidget.classList.remove('preset-locked');
+        }
+
         if (key === 'hrm') updateChildEnabledStates();
         applyConfig();
       });
