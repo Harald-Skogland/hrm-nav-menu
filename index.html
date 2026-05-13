@@ -41,7 +41,7 @@
       border: 1px solid #d5d5da;
       border-radius: 12px;
       padding: 16px;
-      width: 380px;
+      width: 520px;
       box-shadow: 0 12px 32px rgba(0,0,0,0.12);
       display: flex;
       flex-direction: column;
@@ -63,7 +63,7 @@
       margin: 0 0 4px;
     }
     .config-tip {
-      font-size: 14px;
+      font-size: 12px;
       line-height: 20px;
       font-style: italic;
       color: #4a4a4f;
@@ -111,6 +111,13 @@
       gap: 2px;
       flex-shrink: 0;
       min-width: 124px;
+    }
+    .config-col-version {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      flex: 0 0 148px;
+      min-width: 0;
     }
     .config-col-content {
       display: flex;
@@ -162,8 +169,8 @@
       16.5%, 49.5%, 83% { background-color: #fde68a; }
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=46" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=46" defer></script>
+  <script src="./hrm-nav-menu.js?v=53" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=53" defer></script>
 </head>
 <body>
 
@@ -185,6 +192,13 @@
   <div class="config-widget" id="config-widget">
     <div class="config-content">
       <div class="config-columns">
+        <div class="config-col-version">
+          <p class="config-heading">Version</p>
+          <div class="config-row"><label><input type="radio" name="version" value="combined" checked><span>HRM as one module</span></label></div>
+          <p class="config-tip">All navigation for all services available as expandable items</p>
+          <div class="config-row"><label><input type="radio" name="version" value="separate"><span>HRM as separate modules</span></label></div>
+          <p class="config-tip">Each service as a separate navigation point and without disclosing sub-pages of other services.</p>
+        </div>
         <div class="config-col-presets">
           <p class="config-heading">Presets</p>
           <div class="config-row"><label><input type="radio" name="preset" value="custom" checked><span>Custom</span></label></div>
@@ -209,6 +223,10 @@
             <div class="config-row" data-row="hrm.payroll-portal"><label><input type="checkbox" data-cfg="hrm.payroll-portal" checked><span>Payroll Portal</span></label></div>
             <div class="config-row" data-row="hrm.payslip"><label><input type="checkbox" data-cfg="hrm.payslip" checked><span>Payslip</span></label></div>
           </div>
+          <div class="config-row" data-row="fake-context-modules">
+            <label><input type="checkbox" data-cfg="fake-context-modules"><span>Display inactive context modules</span></label>
+          </div>
+          <p class="config-tip">Autopay, Autoreport, Business NXT and OSR</p>
         </div>
       </div>
       <p class="config-tip">Tip: Use <span class="config-shortcut">Command+K</span> to open menu and search ⚡</p>
@@ -291,14 +309,6 @@
         { id: 'pay-tasks', label: 'Tasks', tier: 2, type: 'link' },
         { id: 'pay-paycodes', label: 'Paycodes', tier: 2, type: 'link' },
         { id: 'pay-digital-income', label: 'Digital Income Form', tier: 2, type: 'link' },
-        { id: 'pay-reports', label: 'Reports', tier: 2, type: 'submenu'},
-          { id: 'pay-rpt-a-messages', label: 'A-messages', tier: 3, type: 'link' },
-          { id: 'pay-rpt-accounting', label: 'Accounting overview', tier: 3, type: 'link' },
-          { id: 'pay-rpt-employee', label: 'Employee report', tier: 3, type: 'link' },
-          { id: 'pay-rpt-analytics', label: 'HRM analytics', tier: 3, type: 'link' },
-          { id: 'pay-rpt-reconciliation', label: 'Reconcilliation reports', tier: 3, type: 'link' },
-          { id: 'pay-rpt-reports', label: 'Reports', tier: 3, type: 'link' },
-          { id: 'pay-rpt-transactions', label: 'Transaction overview', tier: 3, type: 'link' },
 
       // ── Payroll Portal ──
       { id: 'payroll-portal', label: 'Payroll Portal', tier: 1, type: 'submenu'},
@@ -457,10 +467,260 @@
         { id: 'apv-cfg-workflows', label: 'Workflows', tier: 2, type: 'link' },
     ];
 
-    const MODULE_META = {
-      hrm:      { name: 'HRM',      items: HRM_ITEMS,      defaultId: 'pay-overview' },
-      approval: { name: 'Approval', items: APPROVAL_ITEMS, defaultId: 'apv-my-tasks' },
-    };
+    // ── Separate-mode module items (from g-sheet-csv/*-Separate-*.csv) ──
+    // Each former-HRM child becomes its own top-level module, absorbing the
+    // matching slices of HRM's central Reports/ and Settings/ subtrees as
+    // local Reports/Settings folders. Existing page-stub ids (`set-cal-*`,
+    // `rpt-cal-*`, etc.) are reused so stubs work in both versions.
+
+    const SEP_CALENDAR_ITEMS = [
+      { id: 'cal-event-registration', label: 'Event registration', tier: 1, type: 'link' },
+      { id: 'cal-timesheets',         label: 'Timesheets',         tier: 1, type: 'link' },
+      { id: 'cal-planned-leaves',     label: 'Planned leaves',     tier: 1, type: 'link' },
+      { id: 'cal-requests-overview',  label: 'Requests overview',  tier: 1, type: 'link' },
+      { id: 'cal-vacation-management',label: 'Vacation management',tier: 1, type: 'link' },
+      { id: 'cal-roster',             label: 'Roster',             tier: 1, type: 'link' },
+      { id: 'cal-reports', label: 'Reports', tier: 1, type: 'submenu' },
+        { id: 'rpt-cal-absence-pct',       label: 'Absence in percent',      tier: 2, type: 'link' },
+        { id: 'rpt-cal-absence-stats',     label: 'Absence statistics',      tier: 2, type: 'link' },
+        { id: 'rpt-cal-all-registrations', label: 'All registrations',       tier: 2, type: 'link' },
+        { id: 'rpt-cal-balances', label: 'Balances', tier: 2, type: 'submenu' },
+          { id: 'rpt-cal-bal-flexitime',      label: 'Flexitime',         tier: 3, type: 'link' },
+          { id: 'rpt-cal-bal-saved-overtime', label: 'Saved overtime',    tier: 3, type: 'link' },
+          { id: 'rpt-cal-bal-vacation',       label: 'Vacation balances', tier: 3, type: 'link' },
+        { id: 'rpt-cal-personnel-list',    label: 'Personnel list',          tier: 2, type: 'link' },
+        { id: 'rpt-cal-refundable',        label: 'Refundable absence',      tier: 2, type: 'link' },
+        { id: 'rpt-cal-self-certified',    label: 'Self-certified sickness', tier: 2, type: 'link' },
+        { id: 'rpt-cal-worked-hours',      label: 'Worked hours overview',   tier: 2, type: 'link' },
+      { id: 'cal-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'set-cal-company',     label: 'Company settings',  tier: 2, type: 'link' },
+        { id: 'set-cal-cost-units',  label: 'Cost unit types',   tier: 2, type: 'link' },
+        { id: 'set-cal-employee', label: 'Employee settings', tier: 2, type: 'submenu' },
+          { id: 'set-cal-emp-bulk-time',        label: 'Bulk update time agreements', tier: 3, type: 'link' },
+          { id: 'set-cal-emp-time-agreements',  label: 'Time agreements',             tier: 3, type: 'link' },
+        { id: 'set-cal-event-codes', label: 'Event codes', tier: 2, type: 'link' },
+        { id: 'set-cal-file-import', label: 'File import', tier: 2, type: 'link' },
+        { id: 'set-cal-special-days',label: 'Special days',tier: 2, type: 'link' },
+        { id: 'set-cal-time-rules', label: 'Time rules', tier: 2, type: 'submenu' },
+          { id: 'set-cal-tr-compensation',     label: 'Compensation rules', tier: 3, type: 'link' },
+          { id: 'set-cal-tr-result-codes',     label: 'Result codes',       tier: 3, type: 'link' },
+          { id: 'set-cal-tr-time-agreements',  label: 'Time agreements',    tier: 3, type: 'link' },
+          { id: 'set-cal-tr-time-terminal',    label: 'Time terminal',      tier: 3, type: 'link' },
+    ];
+
+    const SEP_DOTTIE_ITEMS = [
+      { id: 'dt-overview',     label: 'Overview',     tier: 1, type: 'link' },
+      { id: 'dt-news-wall',    label: 'News wall',    tier: 1, type: 'link' },
+      { id: 'dt-organization', label: 'Organization', tier: 1, type: 'link' },
+      { id: 'dt-employees', label: 'Employees', tier: 1, type: 'submenu' },
+        { id: 'dt-emp-list',         label: 'List',         tier: 2, type: 'link' },
+        { id: 'dt-emp-explore',      label: 'Explore',      tier: 2, type: 'link' },
+        { id: 'dt-emp-notable-days', label: 'Notable days', tier: 2, type: 'link' },
+      { id: 'dt-leave-overview', label: 'Leave overview', tier: 1, type: 'submenu' },
+        { id: 'dt-leave-dept-calendar', label: 'Department calendar', tier: 2, type: 'link' },
+        { id: 'dt-leave-statistics',    label: 'Statistics',          tier: 2, type: 'link' },
+        { id: 'dt-leave-report',        label: 'Report',              tier: 2, type: 'link' },
+      { id: 'dt-skills', label: 'Skills', tier: 1, type: 'submenu' },
+        { id: 'dt-sk-skills',   label: 'Skills',   tier: 2, type: 'link' },
+        { id: 'dt-sk-matrices', label: 'Matrices', tier: 2, type: 'link' },
+      { id: 'dt-documents', label: 'Documents', tier: 1, type: 'submenu' },
+        { id: 'dt-doc-common',        label: 'Common documents', tier: 2, type: 'link' },
+        { id: 'dt-doc-my',            label: 'My documents',     tier: 2, type: 'link' },
+        { id: 'dt-doc-read-overview', label: 'Read overview',    tier: 2, type: 'link' },
+        { id: 'dt-doc-signatures',    label: 'Signatures',       tier: 2, type: 'link' },
+        { id: 'dt-doc-batch',         label: 'Document batch',   tier: 2, type: 'link' },
+        { id: 'dt-doc-rag-search',    label: 'RAG Search',       tier: 2, type: 'link' },
+      { id: 'dt-benefits', label: 'Benefits', tier: 1, type: 'link' },
+      { id: 'dt-conversations', label: 'Conversations', tier: 1, type: 'submenu' },
+        { id: 'dt-conv-calendar',     label: 'Calendar',     tier: 2, type: 'link' },
+        { id: 'dt-conv-all-meetings', label: 'All meetings', tier: 2, type: 'link' },
+        { id: 'dt-conv-questions',    label: 'Questions',    tier: 2, type: 'link' },
+      { id: 'dt-salary-adjustment', label: 'Salary adjustment', tier: 1, type: 'link' },
+      { id: 'dt-checklists',        label: 'Checklists',        tier: 1, type: 'link' },
+      { id: 'dt-insight',           label: 'Insight',           tier: 1, type: 'link' },
+      { id: 'dt-export', label: 'Export', tier: 1, type: 'submenu' },
+        { id: 'dt-export-changelog',           label: 'Changelog',              tier: 2, type: 'link' },
+        { id: 'dt-export-employees',           label: 'Employees',              tier: 2, type: 'link' },
+        { id: 'dt-export-leave',               label: 'Leave',                  tier: 2, type: 'link' },
+        { id: 'dt-export-documents',           label: 'Documents',              tier: 2, type: 'link' },
+        { id: 'dt-export-vacation-transfers',  label: 'Vacation day transfers', tier: 2, type: 'link' },
+      { id: 'dt-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'set-dt-titles', label: 'Titles', tier: 2, type: 'submenu' },
+          { id: 'set-dt-titles-job-titles',         label: 'Job titles',          tier: 3, type: 'link' },
+          { id: 'set-dt-titles-competency-profiles',label: 'Competency profiles', tier: 3, type: 'link' },
+        { id: 'set-dt-company-fields',   label: 'Company fields',   tier: 2, type: 'link' },
+        { id: 'set-dt-document-folders', label: 'Document folders', tier: 2, type: 'link' },
+        { id: 'set-dt-skills', label: 'Skills', tier: 2, type: 'submenu' },
+          { id: 'set-dt-skills-skills',     label: 'Skills',     tier: 3, type: 'link' },
+          { id: 'set-dt-skills-categories', label: 'Categories', tier: 3, type: 'link' },
+        { id: 'set-dt-employee-tags',       label: 'Employee tags',           tier: 2, type: 'link' },
+        { id: 'set-dt-conversations',       label: 'Conversations',           tier: 2, type: 'link' },
+        { id: 'set-dt-property-filling',    label: 'Property filling',        tier: 2, type: 'link' },
+        { id: 'set-dt-templates-employment',label: 'Templates and employement',tier: 2, type: 'link' },
+        { id: 'set-dt-checklist-templates', label: 'Checklist templates',     tier: 2, type: 'link' },
+        { id: 'set-dt-organization', label: 'Organization', tier: 2, type: 'submenu' },
+          { id: 'set-dt-org-companies-subunits', label: 'Companies and subunits',     tier: 3, type: 'link' },
+          { id: 'set-dt-org-unit-types',         label: 'Types of organization units',tier: 3, type: 'link' },
+        { id: 'set-dt-vacation-leave', label: 'Vacation and leave', tier: 2, type: 'submenu' },
+          { id: 'set-dt-vac-calendar',              label: 'Calendar',             tier: 3, type: 'link' },
+          { id: 'set-dt-vac-absence-types-rules',   label: 'Absence types / rules',tier: 3, type: 'link' },
+        { id: 'set-dt-equipment', label: 'Equipment', tier: 2, type: 'submenu' },
+          { id: 'set-dt-equip-equipment',  label: 'Equipment',  tier: 3, type: 'link' },
+          { id: 'set-dt-equip-categories', label: 'Categories', tier: 3, type: 'link' },
+        { id: 'set-dt-access-control', label: 'Access control', tier: 2, type: 'submenu' },
+          { id: 'set-dt-ac-access-matrix', label: 'Access matrix', tier: 3, type: 'link' },
+          { id: 'set-dt-ac-access-roles',  label: 'Access roles',  tier: 3, type: 'link' },
+          { id: 'set-dt-ac-security-logs', label: 'Security logs', tier: 3, type: 'link' },
+        { id: 'set-dt-integrations', label: 'Integrations', tier: 2, type: 'submenu' },
+          { id: 'set-dt-int-services',    label: 'Services',    tier: 3, type: 'link' },
+          { id: 'set-dt-int-logs',        label: 'Logs',        tier: 3, type: 'link' },
+          { id: 'set-dt-int-exclusions',  label: 'Exclusions',  tier: 3, type: 'link' },
+          { id: 'set-dt-int-dotties-api', label: 'Dotties API', tier: 3, type: 'link' },
+        { id: 'set-dt-import',         label: 'Import',         tier: 2, type: 'link' },
+        { id: 'set-dt-delete-policy',  label: 'Delete policy',  tier: 2, type: 'link' },
+        { id: 'set-dt-authentication', label: 'Authentication', tier: 2, type: 'link' },
+        { id: 'set-dt-first-steps',    label: 'First steps',    tier: 2, type: 'link' },
+    ];
+
+    const SEP_EMPLOYEES_ITEMS = [
+      { id: 'emp-list',              label: 'Employee list',            tier: 1, type: 'link' },
+      { id: 'emp-card',              label: 'Employee card',            tier: 1, type: 'link' },
+      { id: 'emp-historic-bulk',     label: 'Historic bulk operations', tier: 1, type: 'link' },
+      { id: 'emp-import-vacation',   label: 'Import vacation balances', tier: 1, type: 'link' },
+      { id: 'emp-import-absences',   label: 'Import absences',          tier: 1, type: 'link' },
+      { id: 'emp-reports', label: 'Reports', tier: 1, type: 'submenu' },
+        { id: 'rpt-emp-report', label: 'Employee report', tier: 2, type: 'link' },
+      { id: 'emp-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'set-emp-cars',             label: 'Cars - New tab',     tier: 2, type: 'link' },
+        { id: 'set-emp-cost-unit-import', label: 'Cost unit import',   tier: 2, type: 'link' },
+        { id: 'set-emp-creditors',        label: 'Creditors - New tab',tier: 2, type: 'link' },
+        { id: 'set-emp-tags',             label: 'Tags',               tier: 2, type: 'link' },
+    ];
+
+    const SEP_EXPENSE_ITEMS = [
+      { id: 'exp-home',                label: 'Home',                tier: 1, type: 'link' },
+      { id: 'exp-additional-services', label: 'Additional services', tier: 1, type: 'link' },
+      { id: 'exp-reports', label: 'Reports', tier: 1, type: 'submenu' },
+        { id: 'rpt-exp-data-extract',   label: 'Data extract',         tier: 2, type: 'link' },
+        { id: 'rpt-exp-driving-log',    label: 'Driving log (admin)',  tier: 2, type: 'link' },
+        { id: 'rpt-exp-claim-download', label: 'Claim download',       tier: 2, type: 'link' },
+        { id: 'rpt-exp-emissions',      label: 'Emissions',            tier: 2, type: 'link' },
+      { id: 'exp-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'set-exp-types', label: 'Types', tier: 2, type: 'submenu' },
+          { id: 'set-exp-typ-daily',    label: 'Daily allowances',   tier: 3, type: 'link' },
+          { id: 'set-exp-typ-abroad',   label: 'Abroad destinations',tier: 3, type: 'link' },
+          { id: 'set-exp-typ-mileages', label: 'Mileages',           tier: 3, type: 'link' },
+          { id: 'set-exp-typ-expenses', label: 'Expenses',           tier: 3, type: 'link' },
+          { id: 'set-exp-typ-other',    label: 'Other',              tier: 3, type: 'link' },
+        { id: 'set-exp-company-config', label: 'Company configuration', tier: 2, type: 'submenu' },
+          { id: 'set-exp-cc-vat',            label: 'VAT configuration',          tier: 3, type: 'link' },
+          { id: 'set-exp-cc-claim-settings', label: 'Claim registration settings',tier: 3, type: 'link' },
+          { id: 'set-exp-cc-workflow',       label: 'Workflow',                   tier: 3, type: 'link' },
+          { id: 'set-exp-cc-disable-claim',  label: 'Disable claim registration', tier: 3, type: 'link' },
+        { id: 'set-exp-cost-units', label: 'Cost units', tier: 2, type: 'submenu' },
+          { id: 'set-exp-cu-types',     label: 'Cost unit types', tier: 3, type: 'link' },
+          { id: 'set-exp-cu-division',  label: '_ Division',      tier: 3, type: 'link' },
+          { id: 'set-exp-cu-sector',    label: '_ Sector',        tier: 3, type: 'link' },
+          { id: 'set-exp-cu-team',      label: '_ Team',          tier: 3, type: 'link' },
+          { id: 'set-exp-cu-location',  label: '_ Location',      tier: 3, type: 'link' },
+          { id: 'set-exp-cu-department',label: '_ Department',    tier: 3, type: 'link' },
+          { id: 'set-exp-cu-custom',    label: '_ Custom',        tier: 3, type: 'link' },
+        { id: 'set-exp-emp-groups', label: 'Employees and groups', tier: 2, type: 'submenu' },
+          { id: 'set-exp-eg-employees', label: 'Employees', tier: 3, type: 'link' },
+          { id: 'set-exp-eg-groups',    label: 'Groups',    tier: 3, type: 'link' },
+    ];
+
+    const SEP_PAYROLL_ITEMS = [
+      { id: 'pay-overview',       label: 'Overview of all companies', tier: 1, type: 'link' },
+      { id: 'pay-transactions',   label: 'Transactions',              tier: 1, type: 'link' },
+      { id: 'pay-tasks',          label: 'Tasks',                     tier: 1, type: 'link' },
+      { id: 'pay-paycodes',       label: 'Paycodes',                  tier: 1, type: 'link' },
+      { id: 'pay-digital-income', label: 'Digital Income Form',       tier: 1, type: 'link' },
+      { id: 'pay-reports', label: 'Reports', tier: 1, type: 'submenu' },
+        { id: 'rpt-pay-a-messages',       label: 'A-messages',            tier: 2, type: 'link' },
+        { id: 'rpt-pay-account-overview', label: 'Account overview',      tier: 2, type: 'link' },
+        { id: 'rpt-pay-analytics',        label: 'HRM Analytics',         tier: 2, type: 'link' },
+        { id: 'rpt-pay-reconciliation',   label: 'Reconcilliation reports',tier: 2, type: 'link' },
+        { id: 'rpt-pay-transactions',     label: 'Transaction overview',  tier: 2, type: 'link' },
+      { id: 'pay-settings', label: 'Settings', tier: 1, type: 'submenu' },
+        { id: 'set-pay-account-types',    label: 'Account types - New tab',           tier: 2, type: 'link' },
+        { id: 'set-pay-accounts',         label: 'Accounts - New tab',                tier: 2, type: 'link' },
+        { id: 'set-pay-altinn',           label: 'Altinn 3',                          tier: 2, type: 'link' },
+        { id: 'set-pay-anomaly',          label: 'Anomaly detection',                 tier: 2, type: 'link' },
+        { id: 'set-pay-company',          label: 'Company - New tab',                 tier: 2, type: 'link' },
+        { id: 'set-pay-enterprise-cert',  label: 'Enterprise certificate',            tier: 2, type: 'link' },
+        { id: 'set-pay-paycodes',         label: 'Paycodes - New tab',                tier: 2, type: 'link' },
+        { id: 'set-pay-payslip-config',   label: 'Payslip configuration - New tab',   tier: 2, type: 'link' },
+        { id: 'set-pay-pension',          label: 'Pension - New tab',                 tier: 2, type: 'link' },
+        { id: 'set-pay-template',         label: 'Template company',                  tier: 2, type: 'link' },
+        { id: 'set-pay-unions',           label: 'Unions - New tab',                  tier: 2, type: 'link' },
+        { id: 'set-pay-wage-planner',     label: 'Wage run planner',                  tier: 2, type: 'link' },
+        { id: 'set-pay-work-time',        label: 'Work time agreements - New tab',    tier: 2, type: 'link' },
+    ];
+
+    const SEP_PAYROLL_PORTAL_ITEMS = [
+      { id: 'pp-dialogue',  label: 'Dialogue',  tier: 1, type: 'link' },
+      { id: 'pp-employees', label: 'Employees', tier: 1, type: 'link' },
+      { id: 'pp-documents', label: 'Documents', tier: 1, type: 'link' },
+    ];
+
+    const SEP_PAYSLIP_ITEMS = [
+      { id: 'ps-payslips',          label: 'Payslips',          tier: 1, type: 'link' },
+      { id: 'ps-year-end-reports',  label: 'Year-end reports',  tier: 1, type: 'link' },
+    ];
+
+    // Fake modules: appear in both switchers (VSN crumb + side-panel) in
+    // every Version, sorted alphabetically alongside real modules. They have
+    // hover but no click behavior — selecting one is a no-op.
+    const FAKE_MODULES = [
+      { id: 'autopay',           name: 'Autopay' },
+      { id: 'autoreport',        name: 'Autoreport' },
+      { id: 'business-nxt',      name: 'Business NXT' },
+      { id: 'onestop-reporting', name: 'OneStop Reporting' },
+    ];
+    const FAKE_MODULE_IDS = new Set(FAKE_MODULES.map(m => m.id));
+
+    // Version mode is toggled by the Version radio column in the Config widget.
+    // Combined: Dottie + all other services nested inside HRM (single module).
+    // Separate: each former-HRM service is its own top-level module.
+    let versionMode = 'combined';
+    let MODULE_META = buildModuleMeta();
+
+    function buildModuleMeta() {
+      if (versionMode === 'separate') {
+        return {
+          approval:         { name: 'Approval',       items: APPROVAL_ITEMS,           defaultId: 'apv-my-tasks' },
+          calendar:         { name: 'Calendar',       items: SEP_CALENDAR_ITEMS,       defaultId: 'cal-event-registration' },
+          dottie:           { name: 'Dottie',         items: SEP_DOTTIE_ITEMS,         defaultId: 'dt-overview' },
+          employees:        { name: 'Employees',      items: SEP_EMPLOYEES_ITEMS,      defaultId: 'emp-list' },
+          expense:          { name: 'Expense',        items: SEP_EXPENSE_ITEMS,        defaultId: 'exp-home' },
+          payroll:          { name: 'Payroll',        items: SEP_PAYROLL_ITEMS,        defaultId: 'pay-overview' },
+          'payroll-portal': { name: 'Payroll Portal', items: SEP_PAYROLL_PORTAL_ITEMS, defaultId: 'pp-dialogue' },
+          payslip:          { name: 'Payslip',        items: SEP_PAYSLIP_ITEMS,        defaultId: 'ps-payslips' },
+        };
+      }
+      return {
+        hrm:      { name: 'HRM',      items: HRM_ITEMS,      defaultId: 'pay-overview' },
+        approval: { name: 'Approval', items: APPROVAL_ITEMS, defaultId: 'apv-my-tasks' },
+      };
+    }
+
+    // Declared early so computeBreadcrumb (called during initial loadPage)
+    // can read it. Populated later from the Config widget's checkboxes.
+    const configState = {};
+
+    // Module visibility rules.
+    //   Combined: HRM is always available; Approval gated by `approval` toggle.
+    //   Separate: Approval gated by `approval`; former-HRM services (Calendar,
+    //   Dottie, …) gated by the HRM umbrella toggle AND their per-service
+    //   `hrm.<id>` toggle. The HRM master row stays in the Config UI in both
+    //   modes (Combined target = HRM module, Separate target = the group).
+    function isModuleEnabled(mid) {
+      if (mid === 'approval') return configState.approval !== false;
+      if (mid === 'hrm')      return true;
+      if (configState.hrm === false) return false;
+      return configState[`hrm.${mid}`] !== false;
+    }
 
     let activeModule = 'hrm';
 
@@ -476,6 +736,8 @@
     nav.addEventListener('hrm-notifications', () => console.log('notifications clicked'));
     nav.addEventListener('hrm-breadcrumb-child', (e) => {
       const id = e.detail.id;
+      // Fake modules in the VSN dropdown have no behavior beyond hover.
+      if (FAKE_MODULE_IDS.has(id)) return;
       // Module ids from the VSN crumb switch the active module instead of loading a page.
       if (MODULE_META[id]) {
         if (id !== activeModule) {
@@ -530,11 +792,17 @@
         label: item.label,
         children: buildSubtree(idx),
       }));
-      // Portal-level "VSN" crumb. Its menu lists the user's modules;
-      // clicking one switches the active module.
-      const vsnChildren = Object.entries(MODULE_META).map(([mid, m]) => ({
-        id: mid, label: m.name, type: 'link',
-      }));
+      // Portal-level "VSN" crumb. Its menu lists the user's enabled real
+      // modules plus the (no-op) fake modules, all sorted alphabetically;
+      // clicking a real one switches the active module, fakes do nothing.
+      const realVsnChildren = Object.entries(MODULE_META)
+        .filter(([mid]) => isModuleEnabled(mid))
+        .map(([mid, m]) => ({ id: mid, label: m.name, type: 'link' }));
+      const fakeVsnChildren = configState['fake-context-modules'] !== false
+        ? FAKE_MODULES.map(m => ({ id: m.id, label: m.name, type: 'link' }))
+        : [];
+      const vsnChildren = [...realVsnChildren, ...fakeVsnChildren]
+        .sort((a, b) => a.label.localeCompare(b.label));
       // Module-level crumb (e.g. "HRM"). Its menu lists every tier-1 item
       // in the active module, with deeper levels nested.
       const moduleChildren = [];
@@ -683,7 +951,6 @@
     });
 
     const configCheckboxes = configWidget.querySelectorAll('input[data-cfg]');
-    const configState = {};
     configCheckboxes.forEach(cb => { configState[cb.dataset.cfg] = cb.checked; });
 
     // Presets — overwrite configState when selected; Custom preserves free-form state.
@@ -754,12 +1021,15 @@
     }
 
     function applyConfig() {
-      // Auto-switch back to HRM if Approval was active but is now disabled.
-      if (activeModule === 'approval' && !configState.approval) {
-        activeModule = 'hrm';
+      // Active module disabled in Config (or missing in current version) →
+      // pick the first enabled module; prefer HRM in Combined.
+      if (!MODULE_META[activeModule] || !isModuleEnabled(activeModule)) {
+        const enabled = Object.keys(MODULE_META).filter(isModuleEnabled);
+        activeModule = enabled.includes('hrm') ? 'hrm' : (enabled[0] || 'hrm');
       }
 
-      // Compute visible items for the active module (HRM honours config; Approval has no config children yet).
+      // Compute visible items for the active module. HRM honours its
+      // child toggles; other modules use their item set verbatim.
       if (activeModule === 'hrm') {
         const hidden = new Set();
         const hrmOn = configState.hrm;
@@ -769,18 +1039,23 @@
         }
         visibleItems = filterItemsByLabel(HRM_ITEMS, hidden);
       } else {
-        visibleItems = APPROVAL_ITEMS;
+        visibleItems = MODULE_META[activeModule].items;
       }
       panel.setAttribute('items', JSON.stringify(visibleItems));
       panel.setAttribute('module-name', MODULE_META[activeModule].name);
 
-      // Module-switcher list = options to switch TO (excludes the active one,
-      // and Approval is hidden entirely if unchecked in Config).
+      // Module-switcher list = enabled real modules (excluding active) plus
+      // the fake modules (no-op decoration), sorted alphabetically together.
       const modules = [];
-      if (activeModule !== 'hrm')      modules.push({ id: 'hrm',      name: 'HRM' });
-      if (activeModule !== 'approval' && configState.approval) {
-        modules.push({ id: 'approval', name: 'Approval' });
+      for (const mid in MODULE_META) {
+        if (mid === activeModule) continue;
+        if (!isModuleEnabled(mid)) continue;
+        modules.push({ id: mid, name: MODULE_META[mid].name });
       }
+      if (configState['fake-context-modules'] !== false) {
+        for (const f of FAKE_MODULES) modules.push({ id: f.id, name: f.name, disabled: true });
+      }
+      modules.sort((a, b) => a.name.localeCompare(b.name));
       panel.setAttribute('modules', JSON.stringify(modules));
 
       const activeId = panel.getAttribute('active-item');
@@ -835,6 +1110,34 @@
       r.addEventListener('change', () => { if (r.checked) setPreset(r.value); });
     });
 
+    function setVersionMode(newMode) {
+      if (newMode === versionMode) return;
+      versionMode = newMode;
+      MODULE_META = buildModuleMeta();
+
+      // Cross-mode continuity: if the current page exists somewhere in the
+      // new mode's module set, switch the active module to whichever owns it;
+      // otherwise fall back to the new mode's first module.
+      const currentPageId = panel.getAttribute('active-item');
+      let owner = null;
+      if (currentPageId) {
+        for (const [mid, m] of Object.entries(MODULE_META)) {
+          if (m.items.find(i => i.id === currentPageId)) { owner = mid; break; }
+        }
+      }
+      if (owner) {
+        activeModule = owner;
+      } else if (!MODULE_META[activeModule]) {
+        activeModule = Object.keys(MODULE_META)[0];
+      }
+
+      applyConfig();
+    }
+
+    configWidget.querySelectorAll('input[name="version"]').forEach(r => {
+      r.addEventListener('change', () => { if (r.checked) setVersionMode(r.value); });
+    });
+
     function flashRow(rowEl) {
       if (!rowEl) return;
       rowEl.classList.remove('flash-pulse');
@@ -881,6 +1184,10 @@
     });
 
     updateChildEnabledStates();
+    // Initial pass — the panel's `modules` attribute starts with whatever the
+    // host HTML hard-coded; run applyConfig once to overwrite it with the
+    // full list (real modules respecting configState + fake modules).
+    applyConfig();
 
     panel.addEventListener('hrm-panel-close',      () => panel.removeAttribute('open'));
     panel.addEventListener('hrm-nav-item',         (e) => { console.log('nav item:', e.detail); loadPage(e.detail.id); panel.removeAttribute('open'); });
@@ -891,6 +1198,8 @@
         activeModule = id;
         applyConfig();
         loadPage(MODULE_META[id].defaultId);
+        // Separate version: switching modules closes the nav panel.
+        if (versionMode === 'separate') panel.removeAttribute('open');
       }
     });
     panel.addEventListener('hrm-profile',          () => console.log('my profile clicked'));

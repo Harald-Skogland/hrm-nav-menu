@@ -166,6 +166,17 @@ const PANEL_STYLES = `
     padding-bottom: 8px;
   }
 
+  .switcher-section-title {
+    padding: 0 16px 4px;
+    font-size: var(--ga-text-sm-size);
+    line-height: var(--ga-text-sm-lineheight);
+    font-weight: 600;
+    color: var(--ga-color-text-disable-selected);
+    text-transform: uppercase;
+    letter-spacing: 0;
+    user-select: none;
+  }
+
   .switcher-item {
     display: flex;
     flex-direction: column;
@@ -838,8 +849,9 @@ class HrmNavMenuPanel extends HTMLElement {
     if (!modules.length) return '';
     return `
       <div class="module-switcher-dropdown">
+        <p class="switcher-section-title">Choose a service</p>
         ${modules.map(m => `
-          <button class="switcher-item" data-action="module-select" data-id="${m.id}" data-name="${m.name}">
+          <button class="switcher-item" data-action="module-select" data-id="${m.id}" data-name="${m.name}"${m.disabled ? ' aria-disabled="true"' : ''}>
             <span class="switcher-item-name">${m.name}</span>
             ${m.description ? `<span class="switcher-item-desc">${m.description}</span>` : ''}
           </button>
@@ -1028,6 +1040,8 @@ class HrmNavMenuPanel extends HTMLElement {
         return;
       }
       if (action === 'module-select') {
+        // Inert (fake) modules: hover only, no close, no event.
+        if (btn.getAttribute('aria-disabled') === 'true') return;
         this._switcherOpen = false;
         this._render();
         this.dispatchEvent(new CustomEvent('hrm-module-select', {
