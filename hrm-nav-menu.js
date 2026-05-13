@@ -18,12 +18,13 @@
 
 const ICON = {
   menu: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>`,
-  chevronsUpDown: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m7 15 5 5 5-5"/><path d="m7 9 5-5 5 5"/></svg>`,
   chevronDown: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
   chevronRight: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
   chevronDown16: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>`,
   sparkles: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.582a.5.5 0 0 1 0 .962L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/><path d="M20 3v4"/><path d="M22 5h-4"/><path d="M4 17v2"/><path d="M5 18H3"/></svg>`,
   bell: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
+  house: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`,
+  circleQuestionMark: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
 };
 
 const STYLES = `
@@ -44,6 +45,9 @@ const STYLES = `
     --ga-color-border-tertiary:        #cccfd7;
     --ga-color-border-focus:           #1f4e66;
     --ga-radius-default:               4px;
+    --ga-size-spacing-01:              2px;
+    --ga-size-spacing-02:              4px;
+    --ga-size-spacing-03:              8px;
     --ga-text-md-size:                 14px;
     --ga-text-md-lineheight:           24px;
     --ga-text-lg-size:                 16px;
@@ -56,6 +60,7 @@ const STYLES = `
     display: flex;
     align-items: center;
     justify-content: space-between;
+    gap: 32px;
     padding: 12px 16px;
     color: var(--ga-color-text-body);
   }
@@ -91,11 +96,56 @@ const STYLES = `
   /* ── Breadcrumbs ───────────────────────────────────── */
   .breadcrumb {
     display: flex;
-    flex-wrap: wrap;
     align-items: center;
     height: 40px;
     gap: 0;
+    flex: 1;
+    min-width: 0;
   }
+
+  /* Non-interactive overflow indicator: shown when leftmost crumbs collapse. */
+  .bc-overflow {
+    display: none;
+    align-items: center;
+    flex-shrink: 0;
+  }
+  .bc-overflow.is-visible { display: flex; }
+  .bc-overflow-dots {
+    color: var(--ga-color-text-action);
+    font-size: var(--ga-text-lg-size);
+    line-height: var(--ga-text-lg-lineheight);
+    letter-spacing: -0.176px;
+    padding: var(--ga-size-spacing-01) var(--ga-size-spacing-02);
+    user-select: none;
+  }
+
+  .bc-item.bc-collapsed { display: none; }
+
+  /* Ghost button-icon at the start of the breadcrumb (landing page). */
+  .btn-home {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: var(--ga-size-spacing-03);
+    border: none;
+    background: transparent;
+    color: var(--ga-color-text-action);
+    cursor: pointer;
+    border-radius: var(--ga-radius-default);
+    margin-right: var(--ga-size-spacing-03);
+    flex-shrink: 0;
+  }
+  .btn-home:hover {
+    background: var(--ga-color-surface-action-hover-2);
+    color: var(--ga-color-text-action-hover);
+  }
+  .btn-home:focus-visible {
+    outline: 2px solid var(--ga-color-border-focus);
+    outline-offset: -2px;
+  }
+  .btn-home svg { display: block; }
 
   .bc-item {
     position: relative;
@@ -139,10 +189,10 @@ const STYLES = `
     user-select: none;
   }
 
-  /* ── Breadcrumb interactive trigger (item with siblings) ─── */
-  /* The whole item (label + chevron) is one clickable surface. Hover
-     behaviour per Gaia spec: no background fill. Link items darken
-     text + underline; current-page shows no hover visual. */
+  /* ── Breadcrumb interactive trigger ─── */
+  /* The label is the clickable surface. Hover/active state per the
+     children-explorer redesign: peach background fill, text darkens to
+     action-hover. No underline. */
   .bc-trigger {
     display: flex;
     align-items: center;
@@ -153,8 +203,7 @@ const STYLES = `
     cursor: pointer;
     font: inherit;
     letter-spacing: inherit;
-    padding: 0;
-    text-decoration: none;
+    padding: var(--ga-size-spacing-01) var(--ga-size-spacing-02);
     border-radius: var(--ga-radius-default);
   }
   /* .bc-trigger uses font: inherit, which resets font-weight. The button
@@ -162,35 +211,15 @@ const STYLES = `
      Restore it with a higher-specificity rule. */
   .bc-trigger.bc-ancestor { font-weight: 400; }
   .bc-trigger.bc-current  { font-weight: 600; }
-  /* Any trigger (link or current-page) that's hovered: underline the label */
-  .bc-trigger:hover .bc-label {
-    text-decoration: underline;
-  }
-  /* Link-type trigger additionally darkens its text on hover */
-  .bc-ancestor.bc-trigger:hover {
-    color: var(--ga-color-text-action-hover);
-  }
-  /* Menu open (active): no underline; link darkens, current-page unchanged */
-  .bc-trigger[aria-expanded="true"] .bc-label {
-    text-decoration: none;
-  }
-  .bc-ancestor.bc-trigger[aria-expanded="true"] {
+  .bc-trigger:hover,
+  .bc-trigger[aria-expanded="true"] {
+    background: var(--ga-color-surface-action-hover-2);
     color: var(--ga-color-text-action-hover);
   }
   .bc-trigger:focus-visible {
     outline: 2px solid var(--ga-color-border-focus);
     outline-offset: 2px;
   }
-
-  .bc-chevron {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: inherit;
-    flex-shrink: 0;
-    pointer-events: none;
-  }
-  .bc-chevron svg { display: block; }
 
   /* ── Tooltip shown on hover of truncated items ─────── */
   .bc-tooltip {
@@ -278,7 +307,10 @@ const STYLES = `
   .bc-sibling-chevron {
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     flex-shrink: 0;
+    width: 16px;
+    height: 16px;
     color: inherit;
     pointer-events: none;
   }
@@ -368,6 +400,8 @@ class HrmNavMenu extends HTMLElement {
   connectedCallback() {
     this._render();
     this._bindEvents();
+    this._resizeObserver = new ResizeObserver(() => this._applyOverflowCollapse());
+    this._resizeObserver.observe(this);
   }
 
   attributeChangedCallback(name) {
@@ -398,22 +432,18 @@ class HrmNavMenu extends HTMLElement {
       const separator = !isLast ? `<span class="bc-separator">/</span>` : '';
       const cls = isLast ? 'bc-current' : 'bc-ancestor';
       const fullLabel = this._esc(crumb.label);
-      const siblings = Array.isArray(crumb.siblings) ? crumb.siblings : [];
-      const hasSiblings = siblings.length > 0;
+      const children = Array.isArray(crumb.children) ? crumb.children : [];
+      const hasChildren = children.length > 0;
 
-      const chevronIcon = hasSiblings
-        ? `<span class="bc-chevron">${ICON.chevronsUpDown}</span>`
-        : '';
+      const innerContent = `<span class="bc-label" data-full="${fullLabel}">${fullLabel}</span>`;
 
-      const innerContent = `<span class="bc-label" data-full="${fullLabel}">${fullLabel}</span>${chevronIcon}`;
-
-      const labelElement = hasSiblings
+      const labelElement = hasChildren
         ? `<button type="button" class="${cls} bc-trigger" data-chevron-index="${i}" aria-haspopup="menu" aria-expanded="false">${innerContent}</button>`
         : `<span class="${cls}">${innerContent}</span>`;
 
       const expandedSet = this._siblingExpanded[i] || new Set();
-      const menu = hasSiblings
-        ? `<div class="bc-sibling-menu" data-menu-index="${i}" hidden>${this._renderSiblingMenuContent(siblings, expandedSet)}</div>`
+      const menu = hasChildren
+        ? `<div class="bc-sibling-menu" data-menu-index="${i}" hidden>${this._renderSiblingMenuContent(children, expandedSet)}</div>`
         : '';
 
       return `
@@ -459,14 +489,11 @@ class HrmNavMenu extends HTMLElement {
       const chevronSvg = isSubmenu
         ? (row.expanded ? ICON.chevronDown16 : ICON.chevronRight)
         : '';
-      const chevron = chevronSvg
-        ? `<span class="bc-sibling-chevron">${chevronSvg}</span>`
-        : '';
-      const indent = 12 + row.depth * 16;
+      const indent = 12 + row.depth * 24;
       return `
         <button class="bc-sibling-item" data-sibling-id="${this._esc(row.id)}" data-sibling-type="${row.type}" style="padding-left: ${indent}px">
+          <span class="bc-sibling-chevron">${chevronSvg}</span>
           <span class="bc-sibling-label">${this._esc(row.label)}</span>
-          ${chevron}
         </button>
       `;
     }).join('');
@@ -494,8 +521,8 @@ class HrmNavMenu extends HTMLElement {
 
   _toggleSiblingFolder(menuIdx, id) {
     const crumb = this._breadcrumbs[menuIdx];
-    if (!crumb || !Array.isArray(crumb.siblings)) return;
-    const tree = crumb.siblings;
+    if (!crumb || !Array.isArray(crumb.children)) return;
+    const tree = crumb.children;
     const expanded = this._siblingExpanded[menuIdx] || new Set();
     const path = this._findTreePath(tree, id);
     if (!path) return;
@@ -524,7 +551,7 @@ class HrmNavMenu extends HTMLElement {
     const crumb = this._breadcrumbs[menuIdx];
     if (!menu || !crumb) return;
     const expanded = this._siblingExpanded[menuIdx] || new Set();
-    menu.innerHTML = this._renderSiblingMenuContent(crumb.siblings, expanded);
+    menu.innerHTML = this._renderSiblingMenuContent(crumb.children, expanded);
   }
 
   _applyTruncation() {
@@ -581,6 +608,13 @@ class HrmNavMenu extends HTMLElement {
             ${ICON.menu}
           </button>
           <div class="breadcrumb" aria-label="Breadcrumb">
+            <button class="btn-home" aria-label="Go to landing page" data-action="home">
+              ${ICON.house}
+            </button>
+            <div class="bc-overflow" aria-hidden="true">
+              <span class="bc-overflow-dots">...</span>
+              <span class="bc-separator">/</span>
+            </div>
             ${this._renderBreadcrumbs()}
           </div>
         </div>
@@ -595,6 +629,10 @@ class HrmNavMenu extends HTMLElement {
             Feedback
           </button>
 
+          <button class="btn-icon" aria-label="Help" data-action="help">
+            ${ICON.circleQuestionMark}
+          </button>
+
           <button class="btn-icon" aria-label="AI assistant" data-action="ai">
             ${ICON.sparkles}
           </button>
@@ -605,19 +643,45 @@ class HrmNavMenu extends HTMLElement {
         </div>
       </nav>
     `;
-    requestAnimationFrame(() => this._applyTruncation());
+    requestAnimationFrame(() => {
+      this._applyTruncation();
+      this._applyOverflowCollapse();
+    });
+  }
+
+  _applyOverflowCollapse() {
+    const bc = this.shadowRoot.querySelector('.breadcrumb');
+    if (!bc) return;
+    const items = Array.from(bc.querySelectorAll('.bc-item'));
+    const overflow = bc.querySelector('.bc-overflow');
+    if (!overflow || items.length === 0) return;
+
+    // Reset: show everything, hide indicator
+    items.forEach(it => it.classList.remove('bc-collapsed'));
+    overflow.classList.remove('is-visible');
+    // Read scrollWidth/clientWidth AFTER the reset; sync layout because we
+    // need accurate measurements per iteration below.
+    if (bc.scrollWidth <= bc.clientWidth) return;
+
+    overflow.classList.add('is-visible');
+    // Hide leftmost crumbs one-by-one until trail fits. Never hide the last
+    // (current-page) crumb — it always stays visible per the spec.
+    for (let i = 0; i < items.length - 1; i++) {
+      items[i].classList.add('bc-collapsed');
+      if (bc.scrollWidth <= bc.clientWidth) return;
+    }
   }
 
   _bindEvents() {
     this.shadowRoot.addEventListener('click', (e) => {
-      // Breadcrumb trigger (whole item if it has siblings) → toggle menu
+      // Breadcrumb trigger (label if it has children) → toggle menu
       const trigger = e.target.closest('.bc-trigger');
       if (trigger) {
         e.stopPropagation();
         this._toggleSiblingMenu(trigger.dataset.chevronIndex);
         return;
       }
-      // Sibling menu item → folder expands; link navigates + closes
+      // Children menu item → folder expands; link navigates + closes
       const sibling = e.target.closest('.bc-sibling-item');
       if (sibling) {
         e.stopPropagation();
@@ -628,7 +692,7 @@ class HrmNavMenu extends HTMLElement {
           return;
         }
         this._closeAllSiblingMenus();
-        this.dispatchEvent(new CustomEvent('hrm-breadcrumb-sibling', {
+        this.dispatchEvent(new CustomEvent('hrm-breadcrumb-child', {
           bubbles: true, composed: true,
           detail: { id: sibling.dataset.siblingId },
         }));
@@ -644,12 +708,20 @@ class HrmNavMenu extends HTMLElement {
         this.dispatchEvent(new CustomEvent('hrm-menu-toggle', { bubbles: true, composed: true }));
         return;
       }
+      if (action === 'home') {
+        this.dispatchEvent(new CustomEvent('hrm-breadcrumb-home', { bubbles: true, composed: true }));
+        return;
+      }
       if (action === 'company-click') {
         this.dispatchEvent(new CustomEvent('hrm-company-click', { bubbles: true, composed: true }));
         return;
       }
       if (action === 'feedback') {
         this.dispatchEvent(new CustomEvent('hrm-feedback', { bubbles: true, composed: true }));
+        return;
+      }
+      if (action === 'help') {
+        this.dispatchEvent(new CustomEvent('hrm-help', { bubbles: true, composed: true }));
         return;
       }
       if (action === 'ai') {
@@ -676,6 +748,10 @@ class HrmNavMenu extends HTMLElement {
   disconnectedCallback() {
     if (this._outsideClickHandler) {
       document.removeEventListener('click', this._outsideClickHandler);
+    }
+    if (this._resizeObserver) {
+      this._resizeObserver.disconnect();
+      this._resizeObserver = null;
     }
   }
 }

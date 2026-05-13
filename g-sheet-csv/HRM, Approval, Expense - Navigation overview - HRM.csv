@@ -5,17 +5,42 @@ HRM,Calendar,Event registration,,
 ,,Requests overview,,
 ,,Vacation management,,
 ,,Roster,,
+,Dottie,Overview,,
+,,News wall,,
+,,Organization,,
+,,Employees,List,
+,,,Explore,
+,,,Notable days,
+,,Leave overview,Department calendar,
+,,,Statistics,
+,,,Report,
+,,Skills,Skills,
+,,,Matrices,
+,,Documents,Common documents,
+,,,My documents,
+,,,Read overview,
+,,,Signatures,
+,,,Document batch,
+,,,RAG Search,
+,,Benefits,,
+,,Conversations,Calendar,
+,,,All meetings,
+,,,Questions,
+,,Salary adjustment,,
+,,Checklists,,
+,,Insight,,
+,,Export,Changelog,
+,,,Employees,
+,,,Leave,
+,,,Documents,
+,,,Vacation day transfers,
 ,Employees,Employee list,,
 ,,Employee card,,
 ,,Historic bulk operations,,
 ,,Import vacation balances,,
 ,,Import absences,,
-,Expense,Manage expenses,,
+,Expense,Home,,
 ,,Additional services,,
-,,Reports,Data extract,
-,,,Driving log (admin),
-,,,Claim download,
-,,,Emissions,
 ,Payroll,Overview of all companies,,
 ,,Transactions,,
 ,,Tasks,,
@@ -31,6 +56,8 @@ HRM,Calendar,Event registration,,
 ,Payroll Portal,Dialogue,,
 ,,Employees,,
 ,,Documents,,
+,Payslip,Payslips,,
+,,Year-end reports,,
 ,Reports,Calendar,Absence in percent,
 ,,,Absence statistics,
 ,,,All registrations,
@@ -62,6 +89,34 @@ HRM,Calendar,Event registration,,
 ,,,,Result codes
 ,,,,Time agreements
 ,,,,Time terminal
+,,Dottie,Titles,Job titles
+,,,,Competency profiles
+,,,Company fields,
+,,,Document folders,
+,,,Skills,Skills
+,,,,Categories
+,,,Employee tags,
+,,,Conversations,
+,,,Property filling,
+,,,Templates and employement,
+,,,Checklist templates,
+,,,Organization,Companies and subunits
+,,,,Types of organization units
+,,,Vacation and leave,Calendar
+,,,,Absence types / rules
+,,,Equipment,Equipment
+,,,,Categories
+,,,Access control,Access matrix
+,,,,Access roles
+,,,,Security logs
+,,,Integrations,Services
+,,,,Logs
+,,,,Exclusions
+,,,,Dotties API
+,,,Import,
+,,,Delete policy,
+,,,Authentication,
+,,,First steps,
 ,,Employees,Cars - New tab,
 ,,,Cost unit import,
 ,,,Creditors - New tab,
@@ -76,12 +131,12 @@ HRM,Calendar,Event registration,,
 ,,,,Workflow
 ,,,,Disable claim registration
 ,,,Cost units,Cost unit types
-,,,,_ Division
-,,,,_ Sector
-,,,,_ Team
-,,,,_ Location
-,,,,_ Department
-,,,,_ Custom
+,,,,"""Division"""
+,,,,"""Sector"""
+,,,,"""Team"""
+,,,,"""Location"""
+,,,,"""Department"""
+,,,,"""Custom"""
 ,,,Employees and groups,Employees
 ,,,,Groups
 ,,Payroll,Account types - New tab,
