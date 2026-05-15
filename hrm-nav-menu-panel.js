@@ -841,7 +841,33 @@ class HrmNavMenuPanel extends HTMLElement {
       }
     }
 
+    // Preserve scroll across the rerender; for expand-clicks, also nudge the
+    // newly-visible descendants into view so the user sees what just opened.
+    const oldContainer = this.shadowRoot.querySelector('.nav-container');
+    const savedScrollTop = oldContainer ? oldContainer.scrollTop : 0;
     this._render();
+    const newContainer = this.shadowRoot.querySelector('.nav-container');
+    if (newContainer) newContainer.scrollTop = savedScrollTop;
+
+    if (isExpanding) {
+      requestAnimationFrame(() => this._scrollExpandedIntoView(clickedId, clickedTier));
+    }
+  }
+
+  _scrollExpandedIntoView(clickedId, clickedTier) {
+    const visible = this._getVisibleItems();
+    const clickedIdx = visible.findIndex(i => i.id === clickedId);
+    if (clickedIdx === -1) return;
+    // Walk to the last visible descendant of the clicked submenu.
+    let lastIdx = clickedIdx;
+    for (let i = clickedIdx + 1; i < visible.length; i++) {
+      if ((visible[i].tier || 1) <= clickedTier) break;
+      lastIdx = i;
+    }
+    if (lastIdx === clickedIdx) return; // Nothing new became visible.
+    const targetId = visible[lastIdx].id;
+    const el = this.shadowRoot.querySelector(`.nav-item-row[data-id="${targetId}"]`);
+    if (el) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
 
   _renderModuleSwitcher() {
