@@ -169,8 +169,8 @@
       16.5%, 49.5%, 83% { background-color: #fde68a; }
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=54" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=54" defer></script>
+  <script src="./hrm-nav-menu.js?v=57" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=57" defer></script>
 </head>
 <body>
 
@@ -669,6 +669,36 @@
       { id: 'ps-year-end-reports',  label: 'Year-end reports',  tier: 1, type: 'link' },
     ];
 
+    // Items that open in a new browser tab when clicked. Their label gets
+    // its "- New tab" suffix stripped (the icon now conveys the meaning),
+    // and clicking them issues window.open instead of in-place loadPage.
+    // Add more ids here as needed.
+    const NEW_TAB_IDS = new Set([
+      'set-emp-cars',
+      'set-emp-creditors',
+      'set-pay-account-types',
+      'set-pay-accounts',
+      'set-pay-company',
+      'set-pay-paycodes',
+      'set-pay-payslip-config',
+      'set-pay-pension',
+      'set-pay-unions',
+      'set-pay-work-time',
+    ]);
+
+    // Mark new-tab items + strip the legacy "- New tab" label suffix. Used
+    // when feeding the panel its items attribute so each renders the icon.
+    function annotateNewTabs(items) {
+      return items.map(item => {
+        if (!NEW_TAB_IDS.has(item.id)) return item;
+        return {
+          ...item,
+          newTab: true,
+          label: item.label.replace(/\s*-\s*New tab\s*$/i, ''),
+        };
+      });
+    }
+
     // Fake modules: appear in both switchers (VSN crumb + side-panel) in
     // every Version, sorted alphabetically alongside real modules. They have
     // hover but no click behavior — selecting one is a no-op.
@@ -726,7 +756,7 @@
 
     // Mutable view of items shown in the panel; reflects active module + config filter.
     let visibleItems = HRM_ITEMS;
-    panel.setAttribute('items', JSON.stringify(visibleItems));
+    panel.setAttribute('items', JSON.stringify(annotateNewTabs(visibleItems)));
 
     nav.addEventListener('hrm-menu-toggle',   () => panel.toggleAttribute('open'));
     nav.addEventListener('hrm-company-click', () => console.log('company selector clicked'));
@@ -738,6 +768,13 @@
       const id = e.detail.id;
       // Fake modules in the VSN dropdown have no behavior beyond hover.
       if (FAKE_MODULE_IDS.has(id)) return;
+      // Dottie in Separate is treated as an external context: open in a new tab
+      // (preserving Separate mode) instead of switching the active module.
+      if (versionMode === 'separate' && id === 'dottie') {
+        const def = MODULE_META.dottie.defaultId;
+        window.open(`./?page=${encodeURIComponent(def)}&version=separate`, '_blank');
+        return;
+      }
       // Module ids from the VSN crumb switch the active module instead of loading a page.
       if (MODULE_META[id]) {
         if (id !== activeModule) {
@@ -745,6 +782,11 @@
           applyConfig();
           loadPage(MODULE_META[id].defaultId);
         }
+        return;
+      }
+      // Page-level new-tab items: open in a new tab, mirroring the nav-menu behavior.
+      if (NEW_TAB_IDS.has(id)) {
+        window.open(`./?page=${encodeURIComponent(id)}`, '_blank');
         return;
       }
       loadPage(id);
@@ -761,12 +803,13 @@
         const t = visibleItems[i].tier || 1;
         if (t <= parentTier) break;
         if (t === parentTier + 1) {
-          const node = {
-            id: visibleItems[i].id,
-            label: visibleItems[i].label,
-            type: visibleItems[i].type,
-          };
-          if (visibleItems[i].type === 'submenu') {
+          const item = visibleItems[i];
+          const node = { id: item.id, label: item.label, type: item.type };
+          if (NEW_TAB_IDS.has(item.id)) {
+            node.newTab = true;
+            node.label = node.label.replace(/\s*-\s*New tab\s*$/i, '');
+          }
+          if (item.type === 'submenu') {
             node.children = buildSubtree(i);
           }
           children.push(node);
@@ -787,17 +830,23 @@
           needed--;
         }
       }
-      const trail = path.map(({ item, idx }) => ({
-        id: item.id,
-        label: item.label,
-        children: buildSubtree(idx),
-      }));
+      const trail = path.map(({ item, idx }) => {
+        const label = NEW_TAB_IDS.has(item.id)
+          ? item.label.replace(/\s*-\s*New tab\s*$/i, '')
+          : item.label;
+        return { id: item.id, label, children: buildSubtree(idx) };
+      });
       // Portal-level "VSN" crumb. Its menu lists the user's enabled real
       // modules plus the (no-op) fake modules, all sorted alphabetically;
       // clicking a real one switches the active module, fakes do nothing.
       const realVsnChildren = Object.entries(MODULE_META)
         .filter(([mid]) => isModuleEnabled(mid))
-        .map(([mid, m]) => ({ id: mid, label: m.name, type: 'link' }));
+        .map(([mid, m]) => {
+          const node = { id: mid, label: m.name, type: 'link' };
+          // Dottie in Separate is shown as an external context — opens in a new tab.
+          if (versionMode === 'separate' && mid === 'dottie') node.newTab = true;
+          return node;
+        });
       const fakeVsnChildren = configState['fake-context-modules'] !== false
         ? FAKE_MODULES.map(m => ({ id: m.id, label: m.name, type: 'link' }))
         : [];
@@ -926,7 +975,24 @@
       }
     }
 
-    loadPage('pay-overview');
+    // Honour ?page=<id>&version=<combined|separate> on initial load so
+    // window.open(./?page=<id>&version=…) lands on that page in that mode.
+    {
+      const params = new URLSearchParams(location.search);
+      const initialPage = params.get('page') || 'pay-overview';
+      if (params.get('version') === 'separate') {
+        versionMode = 'separate';
+        MODULE_META = buildModuleMeta();
+        // Pick the module that owns the initial page so the breadcrumb is correct.
+        for (const [mid, m] of Object.entries(MODULE_META)) {
+          if (m.items.find(i => i.id === initialPage)) { activeModule = mid; break; }
+        }
+        // Reflect the URL-driven version in the Config widget's Version radio.
+        const sepRadio = document.querySelector('input[name="version"][value="separate"]');
+        if (sepRadio) sepRadio.checked = true;
+      }
+      loadPage(initialPage);
+    }
 
     // ── Config widget (dev-only menu-variant planner) ─────────
     const configWidget = document.getElementById('config-widget');
@@ -1041,7 +1107,7 @@
       } else {
         visibleItems = MODULE_META[activeModule].items;
       }
-      panel.setAttribute('items', JSON.stringify(visibleItems));
+      panel.setAttribute('items', JSON.stringify(annotateNewTabs(visibleItems)));
       panel.setAttribute('module-name', MODULE_META[activeModule].name);
 
       // Module-switcher list = enabled real modules (excluding active) plus
@@ -1050,7 +1116,10 @@
       for (const mid in MODULE_META) {
         if (mid === activeModule) continue;
         if (!isModuleEnabled(mid)) continue;
-        modules.push({ id: mid, name: MODULE_META[mid].name });
+        const entry = { id: mid, name: MODULE_META[mid].name };
+        // Dottie in Separate opens in a new tab instead of switching in place.
+        if (versionMode === 'separate' && mid === 'dottie') entry.newTab = true;
+        modules.push(entry);
       }
       if (configState['fake-context-modules'] !== false) {
         for (const f of FAKE_MODULES) modules.push({ id: f.id, name: f.name, disabled: true });
@@ -1190,11 +1259,28 @@
     applyConfig();
 
     panel.addEventListener('hrm-panel-close',      () => panel.removeAttribute('open'));
-    panel.addEventListener('hrm-nav-item',         (e) => { console.log('nav item:', e.detail); loadPage(e.detail.id); panel.removeAttribute('open'); });
+    panel.addEventListener('hrm-nav-item',         (e) => {
+      console.log('nav item:', e.detail);
+      const id = e.detail.id;
+      if (NEW_TAB_IDS.has(id)) {
+        window.open(`./?page=${encodeURIComponent(id)}`, '_blank');
+      } else {
+        loadPage(id);
+      }
+      panel.removeAttribute('open');
+    });
     panel.addEventListener('hrm-module-toggle',    () => console.log('module switcher toggled'));
     panel.addEventListener('hrm-module-select',    (e) => {
       const id = e.detail && e.detail.id;
-      if (id && id !== activeModule && MODULE_META[id]) {
+      if (!id) return;
+      // Dottie in Separate is an external context — open in a new tab and close the panel.
+      if (versionMode === 'separate' && id === 'dottie') {
+        const def = MODULE_META.dottie.defaultId;
+        window.open(`./?page=${encodeURIComponent(def)}&version=separate`, '_blank');
+        panel.removeAttribute('open');
+        return;
+      }
+      if (id !== activeModule && MODULE_META[id]) {
         activeModule = id;
         applyConfig();
         loadPage(MODULE_META[id].defaultId);

@@ -25,6 +25,7 @@ const ICON = {
   bell: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>`,
   house: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 21v-8a1 1 0 0 0-1-1h-4a1 1 0 0 0-1 1v8"/><path d="M3 10a2 2 0 0 1 .709-1.528l7-5.999a2 2 0 0 1 2.582 0l7 5.999A2 2 0 0 1 21 10v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>`,
   circleQuestionMark: `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/></svg>`,
+  externalLink: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>`,
 };
 
 const STYLES = `
@@ -316,6 +317,17 @@ const STYLES = `
   }
   .bc-sibling-item svg { flex-shrink: 0; display: block; }
 
+  .bc-sibling-trailing {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: inherit;
+    margin-left: auto;
+  }
+
   /* ── Right side ────────────────────────────────────── */
   .right {
     display: flex;
@@ -474,6 +486,7 @@ class HrmNavMenu extends HTMLElement {
         type: item.type,
         depth,
         expanded: isExpanded,
+        newTab: !!item.newTab,
       });
       if (isSubmenu && isExpanded && item.children) {
         rows.push(...this._flattenVisibleSiblings(item.children, expandedSet, depth + 1));
@@ -490,10 +503,14 @@ class HrmNavMenu extends HTMLElement {
         ? (row.expanded ? ICON.chevronDown16 : ICON.chevronRight)
         : '';
       const indent = 12 + row.depth * 24;
+      const trailing = row.newTab
+        ? `<span class="bc-sibling-trailing">${ICON.externalLink}</span>`
+        : '';
       return `
         <button class="bc-sibling-item" data-sibling-id="${this._esc(row.id)}" data-sibling-type="${row.type}" style="padding-left: ${indent}px">
           <span class="bc-sibling-chevron">${chevronSvg}</span>
           <span class="bc-sibling-label">${this._esc(row.label)}</span>
+          ${trailing}
         </button>
       `;
     }).join('');

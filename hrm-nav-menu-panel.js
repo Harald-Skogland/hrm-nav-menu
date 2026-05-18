@@ -35,6 +35,7 @@ const NAV_ICON = {
   logOut:       `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>`,
   circleX:      `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/></svg>`,
   chevronRightSm: `<svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"/></svg>`,
+  externalLink: `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 3h6v6"/><path d="M10 14 21 3"/><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/></svg>`,
 };
 
 const PANEL_STYLES = `
@@ -179,8 +180,8 @@ const PANEL_STYLES = `
 
   .switcher-item {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
+    flex-direction: row;
+    align-items: center;
     min-height: 64px;
     padding: 12px 16px;
     background: var(--ga-color-surface-primary);
@@ -188,9 +189,26 @@ const PANEL_STYLES = `
     cursor: pointer;
     width: 100%;
     text-align: left;
-    gap: 0;
+    gap: 8px;
   }
   .switcher-item:hover { background: var(--ga-color-surface-highlight); }
+
+  .switcher-item-body {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 0;
+  }
+
+  .switcher-item-trailing {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ga-color-text-action);
+  }
 
   .switcher-item-name {
     font-size: 16px;
@@ -470,6 +488,17 @@ const PANEL_STYLES = `
     font-weight: 400;
   }
   .nav-item-row.selected .nav-item-label { font-weight: 600; }
+
+  /* Trailing external-link icon for items that open in a new tab. */
+  .nav-item-trailing {
+    width: 16px;
+    height: 16px;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--ga-color-text-action);
+  }
 
   /* Selected indicator badge */
   .nav-item-row.selected::before {
@@ -878,8 +907,11 @@ class HrmNavMenuPanel extends HTMLElement {
         <p class="switcher-section-title">Choose a service</p>
         ${modules.map(m => `
           <button class="switcher-item" data-action="module-select" data-id="${m.id}" data-name="${m.name}"${m.disabled ? ' aria-disabled="true"' : ''}>
-            <span class="switcher-item-name">${m.name}</span>
-            ${m.description ? `<span class="switcher-item-desc">${m.description}</span>` : ''}
+            <span class="switcher-item-body">
+              <span class="switcher-item-name">${m.name}</span>
+              ${m.description ? `<span class="switcher-item-desc">${m.description}</span>` : ''}
+            </span>
+            ${m.newTab ? `<span class="switcher-item-trailing">${NAV_ICON.externalLink}</span>` : ''}
           </button>
         `).join('')}
       </div>
@@ -897,11 +929,16 @@ class HrmNavMenuPanel extends HTMLElement {
         icon = item.expanded ? NAV_ICON.chevronDown : NAV_ICON.chevronRight;
       }
 
+      const trailing = item.newTab
+        ? `<span class="nav-item-trailing">${NAV_ICON.externalLink}</span>`
+        : '';
+
       return `
         <button class="nav-item-row ${tierClass} ${selectedClass}" data-action="nav-item" data-id="${item.id}" data-label="${item.label}" data-type="${item.type || 'link'}">
           <div class="nav-item-inner">
             <span class="nav-item-icon">${icon}</span>
             <span class="nav-item-label">${item.label}</span>
+            ${trailing}
           </div>
         </button>
       `;
