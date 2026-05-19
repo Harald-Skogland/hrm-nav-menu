@@ -169,8 +169,8 @@
       16.5%, 49.5%, 83% { background-color: #fde68a; }
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=62" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=62" defer></script>
+  <script src="./hrm-nav-menu.js?v=65" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=65" defer></script>
 </head>
 <body>
 
@@ -194,9 +194,9 @@
       <div class="config-columns">
         <div class="config-col-version">
           <p class="config-heading">Version</p>
-          <div class="config-row"><label><input type="radio" name="version" value="combined"><span>HRM as one module</span></label></div>
+          <div class="config-row"><label><input type="radio" name="version" value="combined" checked><span>HRM as one module</span></label></div>
           <p class="config-tip">All navigation for all services available as expandable items</p>
-          <div class="config-row"><label><input type="radio" name="version" value="separate" checked><span>HRM as separate modules</span></label></div>
+          <div class="config-row"><label><input type="radio" name="version" value="separate"><span>HRM as separate modules</span></label></div>
           <p class="config-tip">Each service as a separate navigation point and without disclosing sub-pages of other services.</p>
         </div>
         <div class="config-col-presets">
@@ -210,6 +210,9 @@
           <p class="config-heading">Content enabled</p>
           <div class="config-row" data-row="approval">
             <label><input type="checkbox" data-cfg="approval" checked><span>Approval</span></label>
+          </div>
+          <div class="config-row" data-row="dottie">
+            <label><input type="checkbox" data-cfg="dottie" checked><span>Dottie</span></label>
           </div>
           <div class="config-row" data-row="hrm">
             <label><input type="checkbox" data-cfg="hrm" checked><span>HRM</span></label>
@@ -251,44 +254,6 @@
         { id: 'cal-vacation-management', label: 'Vacation management', tier: 2, type: 'link' },
         { id: 'cal-roster', label: 'Roster', tier: 2, type: 'link' },
 
-      // ── Dottie ──
-      { id: 'dottie', label: 'Dottie', tier: 1, type: 'submenu'},
-        { id: 'dt-overview', label: 'Overview', tier: 2, type: 'link' },
-        { id: 'dt-news-wall', label: 'News wall', tier: 2, type: 'link' },
-        { id: 'dt-organization', label: 'Organization', tier: 2, type: 'link' },
-        { id: 'dt-employees', label: 'Employees', tier: 2, type: 'submenu' },
-          { id: 'dt-emp-list', label: 'List', tier: 3, type: 'link' },
-          { id: 'dt-emp-explore', label: 'Explore', tier: 3, type: 'link' },
-          { id: 'dt-emp-notable-days', label: 'Notable days', tier: 3, type: 'link' },
-        { id: 'dt-leave-overview', label: 'Leave overview', tier: 2, type: 'submenu' },
-          { id: 'dt-leave-dept-calendar', label: 'Department calendar', tier: 3, type: 'link' },
-          { id: 'dt-leave-statistics', label: 'Statistics', tier: 3, type: 'link' },
-          { id: 'dt-leave-report', label: 'Report', tier: 3, type: 'link' },
-        { id: 'dt-skills', label: 'Skills', tier: 2, type: 'submenu' },
-          { id: 'dt-sk-skills', label: 'Skills', tier: 3, type: 'link' },
-          { id: 'dt-sk-matrices', label: 'Matrices', tier: 3, type: 'link' },
-        { id: 'dt-documents', label: 'Documents', tier: 2, type: 'submenu' },
-          { id: 'dt-doc-common', label: 'Common documents', tier: 3, type: 'link' },
-          { id: 'dt-doc-my', label: 'My documents', tier: 3, type: 'link' },
-          { id: 'dt-doc-read-overview', label: 'Read overview', tier: 3, type: 'link' },
-          { id: 'dt-doc-signatures', label: 'Signatures', tier: 3, type: 'link' },
-          { id: 'dt-doc-batch', label: 'Document batch', tier: 3, type: 'link' },
-          { id: 'dt-doc-rag-search', label: 'RAG Search', tier: 3, type: 'link' },
-        { id: 'dt-benefits', label: 'Benefits', tier: 2, type: 'link' },
-        { id: 'dt-conversations', label: 'Conversations', tier: 2, type: 'submenu' },
-          { id: 'dt-conv-calendar', label: 'Calendar', tier: 3, type: 'link' },
-          { id: 'dt-conv-all-meetings', label: 'All meetings', tier: 3, type: 'link' },
-          { id: 'dt-conv-questions', label: 'Questions', tier: 3, type: 'link' },
-        { id: 'dt-salary-adjustment', label: 'Salary adjustment', tier: 2, type: 'link' },
-        { id: 'dt-checklists', label: 'Checklists', tier: 2, type: 'link' },
-        { id: 'dt-insight', label: 'Insight', tier: 2, type: 'link' },
-        { id: 'dt-export', label: 'Export', tier: 2, type: 'submenu' },
-          { id: 'dt-export-changelog', label: 'Changelog', tier: 3, type: 'link' },
-          { id: 'dt-export-employees', label: 'Employees', tier: 3, type: 'link' },
-          { id: 'dt-export-leave', label: 'Leave', tier: 3, type: 'link' },
-          { id: 'dt-export-documents', label: 'Documents', tier: 3, type: 'link' },
-          { id: 'dt-export-vacation-transfers', label: 'Vacation day transfers', tier: 3, type: 'link' },
-
       // ── Employees ──
       { id: 'employees', label: 'Employees', tier: 1, type: 'submenu'},
         { id: 'emp-list', label: 'Employee list', tier: 2, type: 'link' },
@@ -322,6 +287,10 @@
         { id: 'ps-year-end-reports', label: 'Year-end reports', tier: 2, type: 'link' },
 
       // ── Reports ──
+      // Calendar and Expense remain folders (their items stay grouped).
+      // Payroll's and Employees' former sub-folders are flattened: all 8
+      // leaves sit at Reports' root, alphabetised. Folders come first
+      // (also alphabetised), then leaves.
       { id: 'reports', label: 'Reports', tier: 1, type: 'submenu'},
         { id: 'rpt-calendar', label: 'Calendar', tier: 2, type: 'submenu'},
           { id: 'rpt-cal-absence-pct', label: 'Absence in percent', tier: 3, type: 'link' },
@@ -335,21 +304,27 @@
           { id: 'rpt-cal-refundable', label: 'Refundable absence', tier: 3, type: 'link' },
           { id: 'rpt-cal-self-certified', label: 'Self-certified sickness', tier: 3, type: 'link' },
           { id: 'rpt-cal-worked-hours', label: 'Worked hours overview', tier: 3, type: 'link' },
-        { id: 'rpt-employees', label: 'Employees', tier: 2, type: 'submenu'},
-          { id: 'rpt-emp-report', label: 'Employee report', tier: 3, type: 'link' },
         { id: 'rpt-expense', label: 'Expense', tier: 2, type: 'submenu'},
           { id: 'rpt-exp-data-extract', label: 'Data extract', tier: 3, type: 'link' },
           { id: 'rpt-exp-driving-log', label: 'Driving log (admin)', tier: 3, type: 'link' },
           { id: 'rpt-exp-claim-download', label: 'Claim download', tier: 3, type: 'link' },
           { id: 'rpt-exp-emissions', label: 'Emissions', tier: 3, type: 'link' },
-        { id: 'rpt-payroll', label: 'Payroll', tier: 2, type: 'submenu'},
-          { id: 'rpt-pay-a-messages', label: 'A-messages', tier: 3, type: 'link' },
-          { id: 'rpt-pay-account-overview', label: 'Account overview', tier: 3, type: 'link' },
-          { id: 'rpt-pay-analytics', label: 'HRM Analytics', tier: 3, type: 'link' },
-          { id: 'rpt-pay-reconciliation', label: 'Reconcilliation reports', tier: 3, type: 'link' },
-          { id: 'rpt-pay-transactions', label: 'Transaction overview', tier: 3, type: 'link' },
+        { id: 'rpt-pay-a-messages',          label: 'A-messages',             tier: 2, type: 'link' },
+        { id: 'rpt-pay-accounting-overview', label: 'Accounting overview',    tier: 2, type: 'link' },
+        { id: 'rpt-pay-altinn-status',       label: 'Altinn 3 status',        tier: 2, type: 'link' },
+        { id: 'rpt-emp-report',              label: 'Employee report',        tier: 2, type: 'link' },
+        { id: 'rpt-pay-analytics',           label: 'HRM Analytics',          tier: 2, type: 'link' },
+        { id: 'rpt-pay-reconciliation',      label: 'Reconciliation reports', tier: 2, type: 'link' },
+        { id: 'rpt-pay-reports',             label: 'Reports',                tier: 2, type: 'link' },
+        { id: 'rpt-pay-transactions',        label: 'Transaction overview',   tier: 2, type: 'link' },
 
       // ── Settings ──
+      // Same flatten treatment as Reports: Calendar and Expense remain
+      // folders. Dottie's settings moved out entirely (they live in the
+      // Dottie module via SEP_DOTTIE_ITEMS). Employees' and Payroll's
+      // former sub-folders dissolve; their 18 leaves sit at Settings'
+      // root, alphabetised. Folders come first (also alphabetised), then
+      // leaves.
       { id: 'settings', label: 'Settings', tier: 1, type: 'submenu'},
         { id: 'set-calendar', label: 'Calendar', tier: 2, type: 'submenu'},
           { id: 'set-cal-company', label: 'Company settings', tier: 3, type: 'link' },
@@ -365,47 +340,6 @@
             { id: 'set-cal-tr-result-codes', label: 'Result codes', tier: 4, type: 'link' },
             { id: 'set-cal-tr-time-agreements', label: 'Time agreements', tier: 4, type: 'link' },
             { id: 'set-cal-tr-time-terminal', label: 'Time terminal', tier: 4, type: 'link' },
-        { id: 'set-dottie', label: 'Dottie', tier: 2, type: 'submenu'},
-          { id: 'set-dt-titles', label: 'Titles', tier: 3, type: 'submenu'},
-            { id: 'set-dt-titles-job-titles', label: 'Job titles', tier: 4, type: 'link' },
-            { id: 'set-dt-titles-competency-profiles', label: 'Competency profiles', tier: 4, type: 'link' },
-          { id: 'set-dt-company-fields', label: 'Company fields', tier: 3, type: 'link' },
-          { id: 'set-dt-document-folders', label: 'Document folders', tier: 3, type: 'link' },
-          { id: 'set-dt-skills', label: 'Skills', tier: 3, type: 'submenu'},
-            { id: 'set-dt-skills-skills', label: 'Skills', tier: 4, type: 'link' },
-            { id: 'set-dt-skills-categories', label: 'Categories', tier: 4, type: 'link' },
-          { id: 'set-dt-employee-tags', label: 'Employee tags', tier: 3, type: 'link' },
-          { id: 'set-dt-conversations', label: 'Conversations', tier: 3, type: 'link' },
-          { id: 'set-dt-property-filling', label: 'Property filling', tier: 3, type: 'link' },
-          { id: 'set-dt-templates-employment', label: 'Templates and employement', tier: 3, type: 'link' },
-          { id: 'set-dt-checklist-templates', label: 'Checklist templates', tier: 3, type: 'link' },
-          { id: 'set-dt-organization', label: 'Organization', tier: 3, type: 'submenu'},
-            { id: 'set-dt-org-companies-subunits', label: 'Companies and subunits', tier: 4, type: 'link' },
-            { id: 'set-dt-org-unit-types', label: 'Types of organization units', tier: 4, type: 'link' },
-          { id: 'set-dt-vacation-leave', label: 'Vacation and leave', tier: 3, type: 'submenu'},
-            { id: 'set-dt-vac-calendar', label: 'Calendar', tier: 4, type: 'link' },
-            { id: 'set-dt-vac-absence-types-rules', label: 'Absence types / rules', tier: 4, type: 'link' },
-          { id: 'set-dt-equipment', label: 'Equipment', tier: 3, type: 'submenu'},
-            { id: 'set-dt-equip-equipment', label: 'Equipment', tier: 4, type: 'link' },
-            { id: 'set-dt-equip-categories', label: 'Categories', tier: 4, type: 'link' },
-          { id: 'set-dt-access-control', label: 'Access control', tier: 3, type: 'submenu'},
-            { id: 'set-dt-ac-access-matrix', label: 'Access matrix', tier: 4, type: 'link' },
-            { id: 'set-dt-ac-access-roles', label: 'Access roles', tier: 4, type: 'link' },
-            { id: 'set-dt-ac-security-logs', label: 'Security logs', tier: 4, type: 'link' },
-          { id: 'set-dt-integrations', label: 'Integrations', tier: 3, type: 'submenu'},
-            { id: 'set-dt-int-services', label: 'Services', tier: 4, type: 'link' },
-            { id: 'set-dt-int-logs', label: 'Logs', tier: 4, type: 'link' },
-            { id: 'set-dt-int-exclusions', label: 'Exclusions', tier: 4, type: 'link' },
-            { id: 'set-dt-int-dotties-api', label: 'Dotties API', tier: 4, type: 'link' },
-          { id: 'set-dt-import', label: 'Import', tier: 3, type: 'link' },
-          { id: 'set-dt-delete-policy', label: 'Delete policy', tier: 3, type: 'link' },
-          { id: 'set-dt-authentication', label: 'Authentication', tier: 3, type: 'link' },
-          { id: 'set-dt-first-steps', label: 'First steps', tier: 3, type: 'link' },
-        { id: 'set-employees', label: 'Employees', tier: 2, type: 'submenu'},
-          { id: 'set-emp-cars', label: 'Cars', tier: 3, type: 'link' },
-          { id: 'set-emp-cost-unit-import', label: 'Cost unit import', tier: 3, type: 'link' },
-          { id: 'set-emp-creditors', label: 'Creditors', tier: 3, type: 'link' },
-          { id: 'set-emp-tags', label: 'Tags', tier: 3, type: 'link' },
         { id: 'set-expense', label: 'Expense', tier: 2, type: 'submenu'},
           { id: 'set-exp-types', label: 'Types', tier: 3, type: 'submenu'},
             { id: 'set-exp-typ-daily', label: 'Daily allowances', tier: 4, type: 'link' },
@@ -429,20 +363,24 @@
           { id: 'set-exp-emp-groups', label: 'Employees and groups', tier: 3, type: 'submenu'},
             { id: 'set-exp-eg-employees', label: 'Employees', tier: 4, type: 'link' },
             { id: 'set-exp-eg-groups', label: 'Groups', tier: 4, type: 'link' },
-        { id: 'set-payroll', label: 'Payroll', tier: 2, type: 'submenu'},
-          { id: 'set-pay-account-types', label: 'Account types', tier: 3, type: 'link' },
-          { id: 'set-pay-accounts', label: 'Accounts', tier: 3, type: 'link' },
-          { id: 'set-pay-altinn', label: 'Altinn 3', tier: 3, type: 'link' },
-          { id: 'set-pay-anomaly', label: 'Anomaly detection', tier: 3, type: 'link' },
-          { id: 'set-pay-company', label: 'Company', tier: 3, type: 'link' },
-          { id: 'set-pay-enterprise-cert', label: 'Enterprise certificate', tier: 3, type: 'link' },
-          { id: 'set-pay-paycodes', label: 'Paycodes', tier: 3, type: 'link' },
-          { id: 'set-pay-payslip-config', label: 'Payslip configuration', tier: 3, type: 'link' },
-          { id: 'set-pay-pension', label: 'Pension', tier: 3, type: 'link' },
-          { id: 'set-pay-template', label: 'Template company', tier: 3, type: 'link' },
-          { id: 'set-pay-unions', label: 'Unions', tier: 3, type: 'link' },
-          { id: 'set-pay-wage-planner', label: 'Wage run planner', tier: 3, type: 'link' },
-          { id: 'set-pay-work-time', label: 'Work time agreements', tier: 3, type: 'link' },
+        { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link' },
+        { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link' },
+        { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link' },
+        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link' },
+        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link' },
+        { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link' },
+        { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link' },
+        { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link' },
+        { id: 'set-pay-enterprise-cert',      label: 'Enterprise certificate',tier: 2, type: 'link' },
+        { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link' },
+        { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link' },
+        { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link' },
+        { id: 'set-emp-tags',                 label: 'Tags',                  tier: 2, type: 'link' },
+        { id: 'set-pay-template',             label: 'Template company',      tier: 2, type: 'link' },
+        { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link' },
+        { id: 'set-pay-wage-run-approval',    label: 'Wage run approval',     tier: 2, type: 'link' },
+        { id: 'set-pay-wage-planner',         label: 'Wage run planner',      tier: 2, type: 'link' },
+        { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link' },
     ];
 
     // ── Approval module items (from g-sheet-csv/*-Approval.csv) ───
@@ -588,25 +526,37 @@
       { id: 'emp-historic-bulk',     label: 'Historic bulk operations', tier: 1, type: 'link' },
       { id: 'emp-import-vacation',   label: 'Import vacation balances', tier: 1, type: 'link' },
       { id: 'emp-import-absences',   label: 'Import absences',          tier: 1, type: 'link' },
+      // Mirrors Payroll Reports: same 8 items, same routing pattern.
       { id: 'emp-reports', label: 'Reports', tier: 1, type: 'submenu' },
-        { id: 'rpt-emp-report', label: 'Employee report', tier: 2, type: 'link' },
-      // Per Separate-Employees.csv: curated list, not a mirror of Payroll
-      // Settings. Each row carries the hosting module — when active module
-      // equals hostModule, navigation is in place; otherwise the icon shows
-      // and click opens the host module in a new tab. Sorted alphabetically
-      // by label.
+        { id: 'rpt-pay-a-messages',           label: 'A-messages',            tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-accounting-overview',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-altinn-status',        label: 'Altinn 3 status',       tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-emp-report',               label: 'Employee report',       tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-analytics',            label: 'HRM Analytics',         tier: 2, type: 'link', specialLink: true },
+        { id: 'rpt-pay-reconciliation',       label: 'Reconciliation reports',tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-reports',              label: 'Reports',               tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-transactions',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
+      // Mirrors Payroll Settings: same 18 items, same hostModule attributes,
+      // alphabetised by label. The host-based routing (in-place when active
+      // equals hostModule, new-tab + icon otherwise) is identical.
       { id: 'emp-settings', label: 'Settings', tier: 1, type: 'submenu' },
         { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-enterprise-cert',      label: 'Enterprise certificate',tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-tags',                 label: 'Tags',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-template',             label: 'Template company',      tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-wage-run-approval',    label: 'Wage run approval',     tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-wage-planner',         label: 'Wage run planner',      tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link', hostModule: 'employees' },
     ];
 
@@ -649,12 +599,19 @@
       { id: 'pay-tasks',          label: 'Tasks',                     tier: 1, type: 'link' },
       { id: 'pay-paycodes',       label: 'Paycodes',                  tier: 1, type: 'link' },
       { id: 'pay-digital-income', label: 'Digital Income Form',       tier: 1, type: 'link' },
+      // Same 8-item mirrored Reports list as Employees module, alphabetised.
+      // hostModule routing: in-place when active === host, otherwise icon + new tab.
+      // HRM Analytics has the special-link affordance (separate-service); its
+      // click behaviour is intentionally pending — flagged with specialLink.
       { id: 'pay-reports', label: 'Reports', tier: 1, type: 'submenu' },
-        { id: 'rpt-pay-a-messages',       label: 'A-messages',            tier: 2, type: 'link' },
-        { id: 'rpt-pay-account-overview', label: 'Account overview',      tier: 2, type: 'link' },
-        { id: 'rpt-pay-analytics',        label: 'HRM Analytics',         tier: 2, type: 'link' },
-        { id: 'rpt-pay-reconciliation',   label: 'Reconcilliation reports',tier: 2, type: 'link' },
-        { id: 'rpt-pay-transactions',     label: 'Transaction overview',  tier: 2, type: 'link' },
+        { id: 'rpt-pay-a-messages',           label: 'A-messages',            tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-accounting-overview',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-altinn-status',        label: 'Altinn 3 status',       tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-emp-report',               label: 'Employee report',       tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-analytics',            label: 'HRM Analytics',         tier: 2, type: 'link', specialLink: true },
+        { id: 'rpt-pay-reconciliation',       label: 'Reconciliation reports',tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-reports',              label: 'Reports',               tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-transactions',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
       // Per Separate-Payroll.csv: each Settings page is hosted by either
       // 'payroll' or 'employees'. When the active module equals hostModule,
       // the row navigates in place; otherwise it gets the new-tab icon and
@@ -692,12 +649,16 @@
       { id: 'ps-year-end-reports',  label: 'Year-end reports',  tier: 1, type: 'link' },
     ];
 
-    // Mark items as "opens in a new tab" in Separate mode when the active
-    // module differs from the item's declared hostModule. Combined mode has
-    // no new-tab affordance — clicks always navigate in place.
+    // Mark items as "opens in a new tab" in Separate mode when:
+    //   - the item declares specialLink (routes to a separate service —
+    //     destination + click behaviour pending), or
+    //   - the active module differs from the item's declared hostModule.
+    // Combined mode has no new-tab affordance — clicks always navigate in place.
     function annotateNewTabs(items) {
       return items.map(item => {
-        if (versionMode === 'separate' && item.hostModule && item.hostModule !== activeModule) {
+        if (versionMode !== 'separate') return item;
+        if (item.specialLink) return { ...item, newTab: true };
+        if (item.hostModule && item.hostModule !== activeModule) {
           return { ...item, newTab: true };
         }
         return item;
@@ -718,8 +679,8 @@
     // Version mode is toggled by the Version radio column in the Config widget.
     // Combined: Dottie + all other services nested inside HRM (single module).
     // Separate: each former-HRM service is its own top-level module.
-    // Separate is the prototype's default; URL ?version=combined opts out.
-    let versionMode = 'separate';
+    // Combined is the prototype's default; URL ?version=separate opts out.
+    let versionMode = 'combined';
     let MODULE_META = buildModuleMeta();
 
     function buildModuleMeta() {
@@ -735,9 +696,14 @@
           payslip:          { name: 'Payslip',        items: SEP_PAYSLIP_ITEMS,        defaultId: 'ps-payslips' },
         };
       }
+      // Combined: HRM + Approval, plus Dottie as its own isolated module
+      // (reuses SEP_DOTTIE_ITEMS — same structure as Separate). Dottie items
+      // are NOT exposed inside HRM's nav; the user reaches Dottie via the
+      // module switcher or VSN crumb, which opens it in a new tab.
       return {
-        hrm:      { name: 'HRM',      items: HRM_ITEMS,      defaultId: 'pay-overview' },
-        approval: { name: 'Approval', items: APPROVAL_ITEMS, defaultId: 'apv-my-tasks' },
+        hrm:      { name: 'HRM',      items: HRM_ITEMS,        defaultId: 'pay-overview' },
+        dottie:   { name: 'Dottie',   items: SEP_DOTTIE_ITEMS, defaultId: 'dt-overview' },
+        approval: { name: 'Approval', items: APPROVAL_ITEMS,   defaultId: 'apv-my-tasks' },
       };
     }
 
@@ -746,7 +712,8 @@
     const configState = {};
 
     // Module visibility rules.
-    //   Combined: HRM is always available; Approval gated by `approval` toggle.
+    //   Combined: HRM is always available; Approval gated by `approval`;
+    //   Dottie gated by its own top-level `dottie` toggle (alongside Approval).
     //   Separate: Approval gated by `approval`; former-HRM services (Calendar,
     //   Dottie, …) gated by the HRM umbrella toggle AND their per-service
     //   `hrm.<id>` toggle. The HRM master row stays in the Config UI in both
@@ -754,15 +721,16 @@
     function isModuleEnabled(mid) {
       if (mid === 'approval') return configState.approval !== false;
       if (mid === 'hrm')      return true;
+      if (mid === 'dottie' && versionMode === 'combined') return configState.dottie !== false;
       if (configState.hrm === false) return false;
       return configState[`hrm.${mid}`] !== false;
     }
 
-    // Default Separate mode: pay-overview lives in the Payroll module.
-    let activeModule = 'payroll';
+    // Default Combined mode: pay-overview lives inside the HRM module.
+    let activeModule = 'hrm';
 
     // Mutable view of items shown in the panel; reflects active module + config filter.
-    let visibleItems = SEP_PAYROLL_ITEMS;
+    let visibleItems = HRM_ITEMS;
     panel.setAttribute('items', JSON.stringify(annotateNewTabs(visibleItems)));
 
     nav.addEventListener('hrm-menu-toggle',   () => panel.toggleAttribute('open'));
@@ -775,11 +743,16 @@
       const id = e.detail.id;
       // Fake modules in the VSN dropdown have no behavior beyond hover.
       if (FAKE_MODULE_IDS.has(id)) return;
-      // Dottie in Separate is treated as an external context: open in a new tab
-      // (preserving Separate mode) instead of switching the active module.
-      if (versionMode === 'separate' && id === 'dottie') {
+      // Dottie is an isolated context in both modes: clicking it from any
+      // other module opens a new tab carrying the active version. Combined
+      // includes the explicit `module=dottie` hint so the new tab lands in
+      // the Dottie module on reload.
+      if (id === 'dottie' && activeModule !== 'dottie') {
         const def = MODULE_META.dottie.defaultId;
-        window.open(`./?page=${encodeURIComponent(def)}&version=separate`, '_blank');
+        const url = versionMode === 'combined'
+          ? `./?page=${encodeURIComponent(def)}&version=combined&module=dottie`
+          : `./?page=${encodeURIComponent(def)}&version=separate`;
+        window.open(url, '_blank');
         return;
       }
       // Module ids from the VSN crumb switch the active module instead of loading a page.
@@ -791,12 +764,15 @@
         }
         return;
       }
-      // Separate-mode host-based new-tab item — target the host module.
+      // Separate-mode: handle specialLink and host-based new-tab cases.
       if (versionMode === 'separate') {
         const item = visibleItems.find(i => i.id === id);
-        if (item && item.hostModule && item.hostModule !== activeModule) {
-          window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
-          return;
+        if (item) {
+          if (item.specialLink) return; // separate-service link — behaviour pending
+          if (item.hostModule && item.hostModule !== activeModule) {
+            window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
+            return;
+          }
         }
       }
       loadPage(id);
@@ -815,8 +791,9 @@
         if (t === parentTier + 1) {
           const item = visibleItems[i];
           const node = { id: item.id, label: item.label, type: item.type };
-          if (versionMode === 'separate' && item.hostModule && item.hostModule !== activeModule) {
-            node.newTab = true;
+          if (versionMode === 'separate') {
+            if (item.specialLink) node.newTab = true;
+            else if (item.hostModule && item.hostModule !== activeModule) node.newTab = true;
           }
           if (item.type === 'submenu') {
             node.children = buildSubtree(i);
@@ -851,8 +828,9 @@
         .filter(([mid]) => isModuleEnabled(mid))
         .map(([mid, m]) => {
           const node = { id: mid, label: m.name, type: 'link' };
-          // Dottie in Separate is shown as an external context — opens in a new tab.
-          if (versionMode === 'separate' && mid === 'dottie') node.newTab = true;
+          // Dottie is always shown as an external context — opens in a new tab
+          // in both Combined and Separate, regardless of the active module.
+          if (mid === 'dottie') node.newTab = true;
           return node;
         });
       const fakeVsnChildren = configState['fake-context-modules'] !== false
@@ -976,6 +954,9 @@
         contentArea.innerHTML = await res.text();
         panel.setAttribute('active-item', id);
         nav.setAttribute('breadcrumbs', JSON.stringify(computeBreadcrumb(id)));
+        // Update the browser tab title — page label only.
+        const item = visibleItems.find(i => i.id === id);
+        if (item) document.title = item.label;
         requestAnimationFrame(() => applyPageVariation(id));
       } catch (err) {
         contentArea.innerHTML = `<!-- no page found for ${id} -->`;
@@ -984,22 +965,32 @@
     }
 
     // Honour ?page=<id>&version=<combined|separate>&module=<id> on initial
-    // load. Separate is the default; ?version=combined opts out.
+    // load. Combined is the default; ?version=separate opts out.
     {
       const params = new URLSearchParams(location.search);
       const initialPage = params.get('page') || 'pay-overview';
-      if (params.get('version') === 'combined') {
-        // Opt out of the Separate default and switch to Combined.
-        versionMode = 'combined';
+      if (params.get('version') === 'separate') {
+        // Opt out of the Combined default and switch to Separate.
+        versionMode = 'separate';
         MODULE_META = buildModuleMeta();
-        activeModule = 'hrm';
-        const cmbRadio = document.querySelector('input[name="version"][value="combined"]');
-        if (cmbRadio) cmbRadio.checked = true;
+        const sepRadio = document.querySelector('input[name="version"][value="separate"]');
+        if (sepRadio) sepRadio.checked = true;
+        // Prefer the explicit ?module=<id> hint (used when opening a
+        // shared page in its host module's new tab), otherwise pick
+        // whichever module owns the page id so the breadcrumb resolves
+        // correctly.
+        const moduleHint = params.get('module');
+        if (moduleHint && MODULE_META[moduleHint]) {
+          activeModule = moduleHint;
+        } else {
+          for (const [mid, m] of Object.entries(MODULE_META)) {
+            if (m.items.find(i => i.id === initialPage)) { activeModule = mid; break; }
+          }
+        }
       } else {
-        // Separate (default). Prefer the explicit ?module=<id> hint (used
-        // when opening a shared page in its host module's new tab),
-        // otherwise pick whichever module owns the page id so the
-        // breadcrumb resolves correctly.
+        // Combined (default). Prefer the explicit ?module=<id> hint (used
+        // when opening Dottie's isolated module in a new tab); otherwise
+        // discover the owning module from MODULE_META.
         const moduleHint = params.get('module');
         if (moduleHint && MODULE_META[moduleHint]) {
           activeModule = moduleHint;
@@ -1041,6 +1032,7 @@
     const PRESETS = {
       'payroll-admin': {
         approval: true,
+        dottie: true,
         hrm: true,
         'hrm.calendar': true,
         'hrm.dottie': true,
@@ -1052,6 +1044,7 @@
       },
       'manager': {
         approval: true,
+        dottie: true,
         hrm: true,
         'hrm.calendar': true,
         'hrm.dottie': true,
@@ -1063,6 +1056,7 @@
       },
       'employee': {
         approval: false,
+        dottie: true,
         hrm: true,
         'hrm.calendar': true,
         'hrm.dottie': true,
@@ -1135,8 +1129,8 @@
         if (mid === activeModule) continue;
         if (!isModuleEnabled(mid)) continue;
         const entry = { id: mid, name: MODULE_META[mid].name };
-        // Dottie in Separate opens in a new tab instead of switching in place.
-        if (versionMode === 'separate' && mid === 'dottie') entry.newTab = true;
+        // Dottie always opens in a new tab instead of switching in place.
+        if (mid === 'dottie') entry.newTab = true;
         modules.push(entry);
       }
       if (configState['fake-context-modules'] !== false) {
@@ -1280,13 +1274,20 @@
     panel.addEventListener('hrm-nav-item',         (e) => {
       console.log('nav item:', e.detail);
       const id = e.detail.id;
-      // Separate-mode host-based new-tab: target the host module in a new tab.
+      // Separate-mode: handle specialLink and host-based new-tab cases.
       if (versionMode === 'separate') {
         const item = visibleItems.find(i => i.id === id);
-        if (item && item.hostModule && item.hostModule !== activeModule) {
-          window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
-          panel.removeAttribute('open');
-          return;
+        if (item) {
+          if (item.specialLink) {
+            // Separate-service link — behaviour pending. Close panel, do nothing else.
+            panel.removeAttribute('open');
+            return;
+          }
+          if (item.hostModule && item.hostModule !== activeModule) {
+            window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
+            panel.removeAttribute('open');
+            return;
+          }
         }
       }
       loadPage(id);
@@ -1296,10 +1297,15 @@
     panel.addEventListener('hrm-module-select',    (e) => {
       const id = e.detail && e.detail.id;
       if (!id) return;
-      // Dottie in Separate is an external context — open in a new tab and close the panel.
-      if (versionMode === 'separate' && id === 'dottie') {
+      // Dottie is an external/isolated context in both modes — open in a new
+      // tab and close the panel. Combined carries `module=dottie` so the new
+      // tab activates Dottie on reload.
+      if (id === 'dottie' && activeModule !== 'dottie') {
         const def = MODULE_META.dottie.defaultId;
-        window.open(`./?page=${encodeURIComponent(def)}&version=separate`, '_blank');
+        const url = versionMode === 'combined'
+          ? `./?page=${encodeURIComponent(def)}&version=combined&module=dottie`
+          : `./?page=${encodeURIComponent(def)}&version=separate`;
+        window.open(url, '_blank');
         panel.removeAttribute('open');
         return;
       }
