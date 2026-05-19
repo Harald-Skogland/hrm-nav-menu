@@ -21,6 +21,21 @@
       border-radius: 4px;
     }
 
+    /* ── Headless page mode ──
+       Pages with `headless: true` in their nav-item open in a new tab via
+       `?headless=1`. The new tab strips all chrome — no top bar, no side
+       panel, no Config widget. The user closes the tab to leave; there is
+       no in-page navigation back to anywhere else. */
+    body.headless hrm-nav-menu,
+    body.headless hrm-nav-menu-panel,
+    body.headless .config-widget,
+    body.headless .config-button {
+      display: none !important;
+    }
+    body.headless .content-area {
+      min-height: calc(100vh - 32px);
+    }
+
     /* ── Config widget (dev-only tool for menu variant planning) ── */
     .config-widget {
       position: fixed;
@@ -309,7 +324,7 @@
           { id: 'rpt-exp-driving-log', label: 'Driving log (admin)', tier: 3, type: 'link' },
           { id: 'rpt-exp-claim-download', label: 'Claim download', tier: 3, type: 'link' },
           { id: 'rpt-exp-emissions', label: 'Emissions', tier: 3, type: 'link' },
-        { id: 'rpt-pay-a-messages',          label: 'A-messages',             tier: 2, type: 'link' },
+        { id: 'rpt-pay-a-messages',          label: 'A-messages',             tier: 2, type: 'link', headless: true },
         { id: 'rpt-pay-accounting-overview', label: 'Accounting overview',    tier: 2, type: 'link' },
         { id: 'rpt-pay-altinn-status',       label: 'Altinn 3 status',        tier: 2, type: 'link' },
         { id: 'rpt-emp-report',              label: 'Employee report',        tier: 2, type: 'link' },
@@ -649,13 +664,16 @@
       { id: 'ps-year-end-reports',  label: 'Year-end reports',  tier: 1, type: 'link' },
     ];
 
-    // Mark items as "opens in a new tab" in Separate mode when:
-    //   - the item declares specialLink (routes to a separate service —
-    //     destination + click behaviour pending), or
-    //   - the active module differs from the item's declared hostModule.
-    // Combined mode has no new-tab affordance — clicks always navigate in place.
+    // Mark items as "opens in a new tab" when:
+    //   - the item declares headless (full-screen chromeless page —
+    //     applies in both versions), or
+    //   - (Separate only) it declares specialLink (separate-service link,
+    //     destination pending), or
+    //   - (Separate only) the active module differs from the item's
+    //     declared hostModule.
     function annotateNewTabs(items) {
       return items.map(item => {
+        if (item.headless) return { ...item, newTab: true };
         if (versionMode !== 'separate') return item;
         if (item.specialLink) return { ...item, newTab: true };
         if (item.hostModule && item.hostModule !== activeModule) {
@@ -764,9 +782,14 @@
         }
         return;
       }
+      const item = visibleItems.find(i => i.id === id);
+      // Headless pages open in a new tab regardless of version.
+      if (item && item.headless) {
+        window.open(`./?page=${encodeURIComponent(id)}&version=${versionMode}&headless=1`, '_blank');
+        return;
+      }
       // Separate-mode: handle specialLink and host-based new-tab cases.
       if (versionMode === 'separate') {
-        const item = visibleItems.find(i => i.id === id);
         if (item) {
           if (item.specialLink) return; // separate-service link — behaviour pending
           if (item.hostModule && item.hostModule !== activeModule) {
@@ -791,7 +814,9 @@
         if (t === parentTier + 1) {
           const item = visibleItems[i];
           const node = { id: item.id, label: item.label, type: item.type };
-          if (versionMode === 'separate') {
+          if (item.headless) {
+            node.newTab = true;
+          } else if (versionMode === 'separate') {
             if (item.specialLink) node.newTab = true;
             else if (item.hostModule && item.hostModule !== activeModule) node.newTab = true;
           }
@@ -952,6 +977,17 @@
         const res = await fetch(`./pages/${id}.html`);
         if (!res.ok) throw new Error(`${res.status}`);
         contentArea.innerHTML = await res.text();
+        // innerHTML doesn't execute injected <script> tags — replace each
+        // with a fresh node so per-page scripts (e.g., the legacy menu's
+        // click handler on the A-messages headless stub) actually run.
+        contentArea.querySelectorAll('script').forEach(oldScript => {
+          const newScript = document.createElement('script');
+          for (const attr of oldScript.attributes) {
+            newScript.setAttribute(attr.name, attr.value);
+          }
+          newScript.textContent = oldScript.textContent;
+          oldScript.replaceWith(newScript);
+        });
         panel.setAttribute('active-item', id);
         nav.setAttribute('breadcrumbs', JSON.stringify(computeBreadcrumb(id)));
         // Update the browser tab title — page label only.
@@ -969,6 +1005,12 @@
     {
       const params = new URLSearchParams(location.search);
       const initialPage = params.get('page') || 'pay-overview';
+      // ?headless=1 strips all chrome — handled via the `body.headless` CSS
+      // rule. The rest of the version/module init still runs (breadcrumb +
+      // active-item attributes are set but never visible).
+      if (params.get('headless') === '1') {
+        document.body.classList.add('headless');
+      }
       if (params.get('version') === 'separate') {
         // Opt out of the Combined default and switch to Separate.
         versionMode = 'separate';
@@ -1000,6 +1042,12 @@
           }
         }
       }
+      // Set active-item synchronously so the later applyConfig() pass
+      // (which runs before loadPage's async fetch resolves) finds it and
+      // skips its fallback loadPage(firstLink). Without this, on cached
+      // reloads the fallback fetch can finish AFTER the real one and
+      // overwrite document.title with the wrong page's label.
+      panel.setAttribute('active-item', initialPage);
       loadPage(initialPage);
     }
 
@@ -1274,9 +1322,15 @@
     panel.addEventListener('hrm-nav-item',         (e) => {
       console.log('nav item:', e.detail);
       const id = e.detail.id;
+      const item = visibleItems.find(i => i.id === id);
+      // Headless pages open in a new tab that strips all chrome.
+      if (item && item.headless) {
+        window.open(`./?page=${encodeURIComponent(id)}&version=${versionMode}&headless=1`, '_blank');
+        panel.removeAttribute('open');
+        return;
+      }
       // Separate-mode: handle specialLink and host-based new-tab cases.
       if (versionMode === 'separate') {
-        const item = visibleItems.find(i => i.id === id);
         if (item) {
           if (item.specialLink) {
             // Separate-service link — behaviour pending. Close panel, do nothing else.

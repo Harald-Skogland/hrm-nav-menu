@@ -1,2 +1,106 @@
-<!-- page: rpt-pay-a-messages | A-messages -->
+<!-- page: rpt-pay-a-messages | A-messages | headless -->
+<style>
+  /* ── Legacy side menu ──
+     Deliberately styled differently from the modern Gaia shell to signal
+     that this UI (and the pages it groups) is being phased out. Verdana,
+     boxy gradient cells, square corners, blue selected state — a clearly
+     pre-2015 enterprise look. Items are placeholders for now and do not
+     navigate. */
+  #content-area .legacy-menu {
+    flex: 0 0 240px;
+    background: #ececed;
+    border: 1px solid #c8cacc;
+    margin-right: 16px;
+    font-family: Verdana, Tahoma, Geneva, sans-serif;
+  }
+  #content-area .legacy-menu ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  #content-area .legacy-menu li {
+    position: relative;
+    padding: 14px 20px;
+    background: linear-gradient(to bottom, #f5f5f6, #e8e8ea);
+    border-bottom: 1px solid #c8cacc;
+    color: #1f1f1f;
+    font-size: 13px;
+    line-height: 1.3;
+    cursor: pointer;
+    user-select: none;
+  }
+  #content-area .legacy-menu li:hover {
+    background: linear-gradient(to bottom, #e4e4e6, #d6d6d8);
+  }
+  #content-area .legacy-menu li.parent::after {
+    content: '';
+    position: absolute;
+    right: 18px;
+    top: 50%;
+    width: 7px;
+    height: 7px;
+    margin-top: -6px;
+    border-right: 2px solid #7a99c5;
+    border-bottom: 2px solid #7a99c5;
+    transform: rotate(45deg);
+  }
+  #content-area .legacy-menu li.child {
+    padding-left: 36px;
+    background: #d8d8da;
+    border-bottom-color: #bdbdbf;
+  }
+  #content-area .legacy-menu li.child:hover {
+    background: #c8c8ca;
+  }
+  #content-area .legacy-menu li.child.hidden {
+    display: none;
+  }
+  /* Selected state — ordered after .child so it wins for child items
+     too (equal specificity, later rule wins). No border colour change. */
+  #content-area .legacy-menu li.selected,
+  #content-area .legacy-menu li.selected:hover {
+    background: #6982b0;
+    color: #ffffff;
+  }
+</style>
+<aside class="legacy-menu">
+  <ul>
+    <li data-key="a-message">A-message</li>
+    <li data-key="income-report">Income report</li>
+    <li data-key="payslip" class="parent expanded">Payslip</li>
+    <li data-key="payslip-configuration" class="child selected" data-parent="payslip">Payslip configuration</li>
+    <li data-key="reports">Reports</li>
+    <li data-key="transaction-overview" class="parent expanded">Transaction overview</li>
+    <li data-key="accounting-view"  class="child" data-parent="transaction-overview">Accounting view</li>
+    <li data-key="transaction-view" class="child" data-parent="transaction-overview">Transaction view</li>
+  </ul>
+</aside>
 <div class="page-box"></div>
+<script>
+  (function () {
+    const menu = document.querySelector('#content-area .legacy-menu');
+    if (!menu) return;
+    menu.addEventListener('click', (e) => {
+      const li = e.target.closest('li');
+      if (!li || !menu.contains(li)) return;
+      if (li.classList.contains('parent')) {
+        // Folder header: toggle expand/collapse only — parents are never
+        // selectable. On expand, promote the first child to selected so
+        // the page always has an active leaf.
+        const expanded = li.classList.toggle('expanded');
+        const key = li.dataset.key;
+        const children = menu.querySelectorAll('li.child[data-parent="' + key + '"]');
+        children.forEach(child => child.classList.toggle('hidden', !expanded));
+        if (expanded && children.length) {
+          menu.querySelectorAll('li.selected').forEach(el => el.classList.remove('selected'));
+          children[0].classList.add('selected');
+        }
+        return;
+      }
+      // Leaf click (top-level non-folder or child of a folder): set as
+      // selected. Other expanded folders stay open.
+      menu.querySelectorAll('li.selected').forEach(el => el.classList.remove('selected'));
+      li.classList.add('selected');
+    });
+  })();
+</script>
