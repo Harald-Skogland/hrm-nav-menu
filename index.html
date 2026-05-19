@@ -169,8 +169,8 @@
       16.5%, 49.5%, 83% { background-color: #fde68a; }
     }
   </style>
-  <script src="./hrm-nav-menu.js?v=57" defer></script>
-  <script src="./hrm-nav-menu-panel.js?v=57" defer></script>
+  <script src="./hrm-nav-menu.js?v=62" defer></script>
+  <script src="./hrm-nav-menu-panel.js?v=62" defer></script>
 </head>
 <body>
 
@@ -194,9 +194,9 @@
       <div class="config-columns">
         <div class="config-col-version">
           <p class="config-heading">Version</p>
-          <div class="config-row"><label><input type="radio" name="version" value="combined" checked><span>HRM as one module</span></label></div>
+          <div class="config-row"><label><input type="radio" name="version" value="combined"><span>HRM as one module</span></label></div>
           <p class="config-tip">All navigation for all services available as expandable items</p>
-          <div class="config-row"><label><input type="radio" name="version" value="separate"><span>HRM as separate modules</span></label></div>
+          <div class="config-row"><label><input type="radio" name="version" value="separate" checked><span>HRM as separate modules</span></label></div>
           <p class="config-tip">Each service as a separate navigation point and without disclosing sub-pages of other services.</p>
         </div>
         <div class="config-col-presets">
@@ -402,9 +402,9 @@
           { id: 'set-dt-authentication', label: 'Authentication', tier: 3, type: 'link' },
           { id: 'set-dt-first-steps', label: 'First steps', tier: 3, type: 'link' },
         { id: 'set-employees', label: 'Employees', tier: 2, type: 'submenu'},
-          { id: 'set-emp-cars', label: 'Cars - New tab', tier: 3, type: 'link' },
+          { id: 'set-emp-cars', label: 'Cars', tier: 3, type: 'link' },
           { id: 'set-emp-cost-unit-import', label: 'Cost unit import', tier: 3, type: 'link' },
-          { id: 'set-emp-creditors', label: 'Creditors - New tab', tier: 3, type: 'link' },
+          { id: 'set-emp-creditors', label: 'Creditors', tier: 3, type: 'link' },
           { id: 'set-emp-tags', label: 'Tags', tier: 3, type: 'link' },
         { id: 'set-expense', label: 'Expense', tier: 2, type: 'submenu'},
           { id: 'set-exp-types', label: 'Types', tier: 3, type: 'submenu'},
@@ -430,19 +430,19 @@
             { id: 'set-exp-eg-employees', label: 'Employees', tier: 4, type: 'link' },
             { id: 'set-exp-eg-groups', label: 'Groups', tier: 4, type: 'link' },
         { id: 'set-payroll', label: 'Payroll', tier: 2, type: 'submenu'},
-          { id: 'set-pay-account-types', label: 'Account types - New tab', tier: 3, type: 'link' },
-          { id: 'set-pay-accounts', label: 'Accounts - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-account-types', label: 'Account types', tier: 3, type: 'link' },
+          { id: 'set-pay-accounts', label: 'Accounts', tier: 3, type: 'link' },
           { id: 'set-pay-altinn', label: 'Altinn 3', tier: 3, type: 'link' },
           { id: 'set-pay-anomaly', label: 'Anomaly detection', tier: 3, type: 'link' },
-          { id: 'set-pay-company', label: 'Company - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-company', label: 'Company', tier: 3, type: 'link' },
           { id: 'set-pay-enterprise-cert', label: 'Enterprise certificate', tier: 3, type: 'link' },
-          { id: 'set-pay-paycodes', label: 'Paycodes - New tab', tier: 3, type: 'link' },
-          { id: 'set-pay-payslip-config', label: 'Payslip configuration - New tab', tier: 3, type: 'link' },
-          { id: 'set-pay-pension', label: 'Pension - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-paycodes', label: 'Paycodes', tier: 3, type: 'link' },
+          { id: 'set-pay-payslip-config', label: 'Payslip configuration', tier: 3, type: 'link' },
+          { id: 'set-pay-pension', label: 'Pension', tier: 3, type: 'link' },
           { id: 'set-pay-template', label: 'Template company', tier: 3, type: 'link' },
-          { id: 'set-pay-unions', label: 'Unions - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-unions', label: 'Unions', tier: 3, type: 'link' },
           { id: 'set-pay-wage-planner', label: 'Wage run planner', tier: 3, type: 'link' },
-          { id: 'set-pay-work-time', label: 'Work time agreements - New tab', tier: 3, type: 'link' },
+          { id: 'set-pay-work-time', label: 'Work time agreements', tier: 3, type: 'link' },
     ];
 
     // ── Approval module items (from g-sheet-csv/*-Approval.csv) ───
@@ -590,11 +590,24 @@
       { id: 'emp-import-absences',   label: 'Import absences',          tier: 1, type: 'link' },
       { id: 'emp-reports', label: 'Reports', tier: 1, type: 'submenu' },
         { id: 'rpt-emp-report', label: 'Employee report', tier: 2, type: 'link' },
+      // Per Separate-Employees.csv: curated list, not a mirror of Payroll
+      // Settings. Each row carries the hosting module — when active module
+      // equals hostModule, navigation is in place; otherwise the icon shows
+      // and click opens the host module in a new tab. Sorted alphabetically
+      // by label.
       { id: 'emp-settings', label: 'Settings', tier: 1, type: 'submenu' },
-        { id: 'set-emp-cars',             label: 'Cars - New tab',     tier: 2, type: 'link' },
-        { id: 'set-emp-cost-unit-import', label: 'Cost unit import',   tier: 2, type: 'link' },
-        { id: 'set-emp-creditors',        label: 'Creditors - New tab',tier: 2, type: 'link' },
-        { id: 'set-emp-tags',             label: 'Tags',               tier: 2, type: 'link' },
+        { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-tags',                 label: 'Tags',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link', hostModule: 'employees' },
     ];
 
     const SEP_EXPENSE_ITEMS = [
@@ -642,20 +655,30 @@
         { id: 'rpt-pay-analytics',        label: 'HRM Analytics',         tier: 2, type: 'link' },
         { id: 'rpt-pay-reconciliation',   label: 'Reconcilliation reports',tier: 2, type: 'link' },
         { id: 'rpt-pay-transactions',     label: 'Transaction overview',  tier: 2, type: 'link' },
+      // Per Separate-Payroll.csv: each Settings page is hosted by either
+      // 'payroll' or 'employees'. When the active module equals hostModule,
+      // the row navigates in place; otherwise it gets the new-tab icon and
+      // clicking opens a new browser tab in the host's module context.
+      // Sorted alphabetically by label.
       { id: 'pay-settings', label: 'Settings', tier: 1, type: 'submenu' },
-        { id: 'set-pay-account-types',    label: 'Account types - New tab',           tier: 2, type: 'link' },
-        { id: 'set-pay-accounts',         label: 'Accounts - New tab',                tier: 2, type: 'link' },
-        { id: 'set-pay-altinn',           label: 'Altinn 3',                          tier: 2, type: 'link' },
-        { id: 'set-pay-anomaly',          label: 'Anomaly detection',                 tier: 2, type: 'link' },
-        { id: 'set-pay-company',          label: 'Company - New tab',                 tier: 2, type: 'link' },
-        { id: 'set-pay-enterprise-cert',  label: 'Enterprise certificate',            tier: 2, type: 'link' },
-        { id: 'set-pay-paycodes',         label: 'Paycodes - New tab',                tier: 2, type: 'link' },
-        { id: 'set-pay-payslip-config',   label: 'Payslip configuration - New tab',   tier: 2, type: 'link' },
-        { id: 'set-pay-pension',          label: 'Pension - New tab',                 tier: 2, type: 'link' },
-        { id: 'set-pay-template',         label: 'Template company',                  tier: 2, type: 'link' },
-        { id: 'set-pay-unions',           label: 'Unions - New tab',                  tier: 2, type: 'link' },
-        { id: 'set-pay-wage-planner',     label: 'Wage run planner',                  tier: 2, type: 'link' },
-        { id: 'set-pay-work-time',        label: 'Work time agreements - New tab',    tier: 2, type: 'link' },
+        { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-enterprise-cert',      label: 'Enterprise certificate',tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-tags',                 label: 'Tags',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-template',             label: 'Template company',      tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-wage-run-approval',    label: 'Wage run approval',     tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-wage-planner',         label: 'Wage run planner',      tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link', hostModule: 'employees' },
     ];
 
     const SEP_PAYROLL_PORTAL_ITEMS = [
@@ -669,33 +692,15 @@
       { id: 'ps-year-end-reports',  label: 'Year-end reports',  tier: 1, type: 'link' },
     ];
 
-    // Items that open in a new browser tab when clicked. Their label gets
-    // its "- New tab" suffix stripped (the icon now conveys the meaning),
-    // and clicking them issues window.open instead of in-place loadPage.
-    // Add more ids here as needed.
-    const NEW_TAB_IDS = new Set([
-      'set-emp-cars',
-      'set-emp-creditors',
-      'set-pay-account-types',
-      'set-pay-accounts',
-      'set-pay-company',
-      'set-pay-paycodes',
-      'set-pay-payslip-config',
-      'set-pay-pension',
-      'set-pay-unions',
-      'set-pay-work-time',
-    ]);
-
-    // Mark new-tab items + strip the legacy "- New tab" label suffix. Used
-    // when feeding the panel its items attribute so each renders the icon.
+    // Mark items as "opens in a new tab" in Separate mode when the active
+    // module differs from the item's declared hostModule. Combined mode has
+    // no new-tab affordance — clicks always navigate in place.
     function annotateNewTabs(items) {
       return items.map(item => {
-        if (!NEW_TAB_IDS.has(item.id)) return item;
-        return {
-          ...item,
-          newTab: true,
-          label: item.label.replace(/\s*-\s*New tab\s*$/i, ''),
-        };
+        if (versionMode === 'separate' && item.hostModule && item.hostModule !== activeModule) {
+          return { ...item, newTab: true };
+        }
+        return item;
       });
     }
 
@@ -713,7 +718,8 @@
     // Version mode is toggled by the Version radio column in the Config widget.
     // Combined: Dottie + all other services nested inside HRM (single module).
     // Separate: each former-HRM service is its own top-level module.
-    let versionMode = 'combined';
+    // Separate is the prototype's default; URL ?version=combined opts out.
+    let versionMode = 'separate';
     let MODULE_META = buildModuleMeta();
 
     function buildModuleMeta() {
@@ -752,10 +758,11 @@
       return configState[`hrm.${mid}`] !== false;
     }
 
-    let activeModule = 'hrm';
+    // Default Separate mode: pay-overview lives in the Payroll module.
+    let activeModule = 'payroll';
 
     // Mutable view of items shown in the panel; reflects active module + config filter.
-    let visibleItems = HRM_ITEMS;
+    let visibleItems = SEP_PAYROLL_ITEMS;
     panel.setAttribute('items', JSON.stringify(annotateNewTabs(visibleItems)));
 
     nav.addEventListener('hrm-menu-toggle',   () => panel.toggleAttribute('open'));
@@ -784,10 +791,13 @@
         }
         return;
       }
-      // Page-level new-tab items: open in a new tab, mirroring the nav-menu behavior.
-      if (NEW_TAB_IDS.has(id)) {
-        window.open(`./?page=${encodeURIComponent(id)}`, '_blank');
-        return;
+      // Separate-mode host-based new-tab item — target the host module.
+      if (versionMode === 'separate') {
+        const item = visibleItems.find(i => i.id === id);
+        if (item && item.hostModule && item.hostModule !== activeModule) {
+          window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
+          return;
+        }
       }
       loadPage(id);
     });
@@ -805,9 +815,8 @@
         if (t === parentTier + 1) {
           const item = visibleItems[i];
           const node = { id: item.id, label: item.label, type: item.type };
-          if (NEW_TAB_IDS.has(item.id)) {
+          if (versionMode === 'separate' && item.hostModule && item.hostModule !== activeModule) {
             node.newTab = true;
-            node.label = node.label.replace(/\s*-\s*New tab\s*$/i, '');
           }
           if (item.type === 'submenu') {
             node.children = buildSubtree(i);
@@ -830,12 +839,11 @@
           needed--;
         }
       }
-      const trail = path.map(({ item, idx }) => {
-        const label = NEW_TAB_IDS.has(item.id)
-          ? item.label.replace(/\s*-\s*New tab\s*$/i, '')
-          : item.label;
-        return { id: item.id, label, children: buildSubtree(idx) };
-      });
+      const trail = path.map(({ item, idx }) => ({
+        id: item.id,
+        label: item.label,
+        children: buildSubtree(idx),
+      }));
       // Portal-level "VSN" crumb. Its menu lists the user's enabled real
       // modules plus the (no-op) fake modules, all sorted alphabetically;
       // clicking a real one switches the active module, fakes do nothing.
@@ -975,21 +983,31 @@
       }
     }
 
-    // Honour ?page=<id>&version=<combined|separate> on initial load so
-    // window.open(./?page=<id>&version=…) lands on that page in that mode.
+    // Honour ?page=<id>&version=<combined|separate>&module=<id> on initial
+    // load. Separate is the default; ?version=combined opts out.
     {
       const params = new URLSearchParams(location.search);
       const initialPage = params.get('page') || 'pay-overview';
-      if (params.get('version') === 'separate') {
-        versionMode = 'separate';
+      if (params.get('version') === 'combined') {
+        // Opt out of the Separate default and switch to Combined.
+        versionMode = 'combined';
         MODULE_META = buildModuleMeta();
-        // Pick the module that owns the initial page so the breadcrumb is correct.
-        for (const [mid, m] of Object.entries(MODULE_META)) {
-          if (m.items.find(i => i.id === initialPage)) { activeModule = mid; break; }
+        activeModule = 'hrm';
+        const cmbRadio = document.querySelector('input[name="version"][value="combined"]');
+        if (cmbRadio) cmbRadio.checked = true;
+      } else {
+        // Separate (default). Prefer the explicit ?module=<id> hint (used
+        // when opening a shared page in its host module's new tab),
+        // otherwise pick whichever module owns the page id so the
+        // breadcrumb resolves correctly.
+        const moduleHint = params.get('module');
+        if (moduleHint && MODULE_META[moduleHint]) {
+          activeModule = moduleHint;
+        } else {
+          for (const [mid, m] of Object.entries(MODULE_META)) {
+            if (m.items.find(i => i.id === initialPage)) { activeModule = mid; break; }
+          }
         }
-        // Reflect the URL-driven version in the Config widget's Version radio.
-        const sepRadio = document.querySelector('input[name="version"][value="separate"]');
-        if (sepRadio) sepRadio.checked = true;
       }
       loadPage(initialPage);
     }
@@ -1262,11 +1280,16 @@
     panel.addEventListener('hrm-nav-item',         (e) => {
       console.log('nav item:', e.detail);
       const id = e.detail.id;
-      if (NEW_TAB_IDS.has(id)) {
-        window.open(`./?page=${encodeURIComponent(id)}`, '_blank');
-      } else {
-        loadPage(id);
+      // Separate-mode host-based new-tab: target the host module in a new tab.
+      if (versionMode === 'separate') {
+        const item = visibleItems.find(i => i.id === id);
+        if (item && item.hostModule && item.hostModule !== activeModule) {
+          window.open(`./?page=${encodeURIComponent(id)}&version=separate&module=${encodeURIComponent(item.hostModule)}`, '_blank');
+          panel.removeAttribute('open');
+          return;
+        }
       }
+      loadPage(id);
       panel.removeAttribute('open');
     });
     panel.addEventListener('hrm-module-toggle',    () => console.log('module switcher toggled'));
