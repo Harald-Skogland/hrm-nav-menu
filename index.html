@@ -32,6 +32,70 @@
     body.headless .config-button {
       display: none !important;
     }
+    /* ── Legacy side menu (set-reports-1 et al.) ──
+       Deliberately styled differently from the modern Gaia shell to signal
+       this UI (and the pages it groups) is being phased out. Verdana,
+       boxy gradient cells, square corners, blue selected state — a clearly
+       pre-2015 enterprise look. Rendered into #content-area whenever a
+       page's nav-item declares `legacyMenu`. Folder headers expand/collapse
+       only; leaves are selectable and navigate within the headless tab. */
+    #content-area .legacy-menu {
+      flex: 0 0 240px;
+      background: #ececed;
+      border: 1px solid #c8cacc;
+      margin-right: 16px;
+      font-family: Verdana, Tahoma, Geneva, sans-serif;
+    }
+    #content-area .legacy-menu ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+    #content-area .legacy-menu li {
+      position: relative;
+      padding: 14px 20px;
+      background: linear-gradient(to bottom, #f5f5f6, #e8e8ea);
+      border-bottom: 1px solid #c8cacc;
+      color: #1f1f1f;
+      font-size: 13px;
+      line-height: 1.3;
+      cursor: pointer;
+      user-select: none;
+    }
+    #content-area .legacy-menu li:hover {
+      background: linear-gradient(to bottom, #e4e4e6, #d6d6d8);
+    }
+    #content-area .legacy-menu li.parent::after {
+      content: '';
+      position: absolute;
+      right: 18px;
+      top: 50%;
+      width: 7px;
+      height: 7px;
+      margin-top: -6px;
+      border-right: 2px solid #7a99c5;
+      border-bottom: 2px solid #7a99c5;
+      transform: rotate(45deg);
+    }
+    #content-area .legacy-menu li.child {
+      padding-left: 36px;
+      background: #d8d8da;
+      border-bottom-color: #bdbdbf;
+    }
+    #content-area .legacy-menu li.child:hover {
+      background: #c8c8ca;
+    }
+    #content-area .legacy-menu li.child.hidden {
+      display: none;
+    }
+    /* Selected state — ordered after .child so it wins for child items
+       too (equal specificity, later rule wins). */
+    #content-area .legacy-menu li.selected,
+    #content-area .legacy-menu li.selected:hover {
+      background: #6982b0;
+      color: #ffffff;
+    }
+
     body.headless .content-area {
       min-height: calc(100vh - 32px);
     }
@@ -324,14 +388,15 @@
           { id: 'rpt-exp-driving-log', label: 'Driving log (admin)', tier: 3, type: 'link' },
           { id: 'rpt-exp-claim-download', label: 'Claim download', tier: 3, type: 'link' },
           { id: 'rpt-exp-emissions', label: 'Emissions', tier: 3, type: 'link' },
-        { id: 'rpt-pay-a-messages',          label: 'A-messages',             tier: 2, type: 'link', headless: true },
-        { id: 'rpt-pay-accounting-overview', label: 'Accounting overview',    tier: 2, type: 'link' },
+        { id: 'rpt-pay-a-messages',          label: 'A-messages',             tier: 2, type: 'link' },
+        { id: 'rpt-pay-a-messages-old',      label: 'A-messages old',         tier: 2, type: 'link', headless: true, legacyMenu: 'set-reports-1' },
+        { id: 'rpt-pay-accounting-view',     label: 'Accounting view',        tier: 2, type: 'link', headless: true, legacyMenu: 'set-reports-1' },
         { id: 'rpt-pay-altinn-status',       label: 'Altinn 3 status',        tier: 2, type: 'link' },
-        { id: 'rpt-emp-report',              label: 'Employee report',        tier: 2, type: 'link' },
-        { id: 'rpt-pay-analytics',           label: 'HRM Analytics',          tier: 2, type: 'link' },
+        { id: 'rpt-emp-report',              label: 'Employee report',        tier: 2, type: 'link', headless: true },
+        { id: 'rpt-pay-analytics',           label: 'HRM Analytics',          tier: 2, type: 'link', headless: true },
         { id: 'rpt-pay-reconciliation',      label: 'Reconciliation reports', tier: 2, type: 'link' },
-        { id: 'rpt-pay-reports',             label: 'Reports',                tier: 2, type: 'link' },
-        { id: 'rpt-pay-transactions',        label: 'Transaction overview',   tier: 2, type: 'link' },
+        { id: 'rpt-pay-reports',             label: 'Reports',                tier: 2, type: 'link', headless: true, legacyMenu: 'set-reports-1' },
+        { id: 'rpt-pay-transaction-view',    label: 'Transaction view',       tier: 2, type: 'link', headless: true, legacyMenu: 'set-reports-1' },
 
       // ── Settings ──
       // Same flatten treatment as Reports: Calendar and Expense remain
@@ -378,24 +443,24 @@
           { id: 'set-exp-emp-groups', label: 'Employees and groups', tier: 3, type: 'submenu'},
             { id: 'set-exp-eg-employees', label: 'Employees', tier: 4, type: 'link' },
             { id: 'set-exp-eg-groups', label: 'Groups', tier: 4, type: 'link' },
-        { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link' },
-        { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link' },
+        { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
+        { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
         { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link' },
-        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link' },
-        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link' },
+        { id: 'set-emp-car-register',         label: 'Car register',          tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
+        { id: 'set-pay-company-settings',     label: 'Company settings',      tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
         { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link' },
         { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link' },
-        { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link' },
+        { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
         { id: 'set-pay-enterprise-cert',      label: 'Enterprise certificate',tier: 2, type: 'link' },
-        { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link' },
-        { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link' },
-        { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link' },
+        { id: 'set-pay-paycodes',             label: 'Paycodes',              tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-2' },
+        { id: 'set-pay-payslip-config',       label: 'Payslip configuration', tier: 2, type: 'link', headless: true, legacyMenu: 'set-reports-1' },
+        { id: 'set-pay-pension',              label: 'Pension',               tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
         { id: 'set-emp-tags',                 label: 'Tags',                  tier: 2, type: 'link' },
         { id: 'set-pay-template',             label: 'Template company',      tier: 2, type: 'link' },
-        { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link' },
+        { id: 'set-pay-unions',               label: 'Unions',                tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
         { id: 'set-pay-wage-run-approval',    label: 'Wage run approval',     tier: 2, type: 'link' },
         { id: 'set-pay-wage-planner',         label: 'Wage run planner',      tier: 2, type: 'link' },
-        { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link' },
+        { id: 'set-pay-work-time',            label: 'Work time agreements',  tier: 2, type: 'link', headless: true, legacyMenu: 'set-settings-1' },
     ];
 
     // ── Approval module items (from g-sheet-csv/*-Approval.csv) ───
@@ -419,6 +484,94 @@
         { id: 'apv-cfg-substitutes', label: 'Substitutes', tier: 2, type: 'link' },
         { id: 'apv-cfg-workflows', label: 'Workflows', tier: 2, type: 'link' },
     ];
+
+    // ── Legacy side menus ──
+    // Each entry is a list of top-level items. Items may be folders (type:
+    // 'folder' + children) or leaves. A leaf with a pageId routes via
+    // loadPage when clicked; a leaf without is a non-linking placeholder.
+    // Selection in the rendered menu is derived from the current page id —
+    // whichever item's pageId matches becomes `.selected` and its parent
+    // folder is auto-expanded.
+    const LEGACY_MENUS = {
+      'set-reports-1': [
+        { key: 'a-message',            label: 'A-message',            pageId: 'rpt-pay-a-messages-old' },
+        { key: 'income-report',        label: 'Income report' },
+        { key: 'payslip',              label: 'Payslip', type: 'folder', children: [
+          { key: 'payslip-configuration', label: 'Payslip configuration', pageId: 'set-pay-payslip-config' },
+        ]},
+        { key: 'reports',              label: 'Reports', pageId: 'rpt-pay-reports' },
+        { key: 'transaction-overview', label: 'Transaction overview', type: 'folder', children: [
+          { key: 'accounting-view',  label: 'Accounting view',  pageId: 'rpt-pay-accounting-view' },
+          { key: 'transaction-view', label: 'Transaction view', pageId: 'rpt-pay-transaction-view' },
+        ]},
+      ],
+      // Items in image order (NOT alphabetical). Three items have no modern
+      // counterpart (Cost unit types, Cost units, Employment groups) and
+      // act as non-linking placeholders.
+      'set-settings-1': [
+        { key: 'company-settings',     label: 'Company settings',     pageId: 'set-pay-company-settings' },
+        { key: 'creditors',            label: 'Creditors',            pageId: 'set-emp-creditors' },
+        { key: 'unions',               label: 'Unions',               pageId: 'set-pay-unions' },
+        { key: 'pension',              label: 'Pension',              pageId: 'set-pay-pension' },
+        { key: 'accounts',             label: 'Accounts',             pageId: 'set-pay-accounts' },
+        { key: 'account-types',        label: 'Account types',        pageId: 'set-pay-account-types' },
+        { key: 'cost-unit-types',      label: 'Cost unit types' },
+        { key: 'cost-units',           label: 'Cost units' },
+        { key: 'car-register',         label: 'Car register',         pageId: 'set-emp-car-register' },
+        { key: 'employment-groups',    label: 'Employment groups' },
+        { key: 'work-time-agreements', label: 'Work time agreements', pageId: 'set-pay-work-time' },
+      ],
+      'set-settings-2': [
+        { key: 'rules', label: 'Rules', type: 'folder', children: [
+          { key: 'paycodes', label: 'Paycodes', pageId: 'set-pay-paycodes' },
+        ]},
+      ],
+    };
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => (
+        { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+      ));
+    }
+
+    function renderLegacyMenu(menuId, currentPageId) {
+      const items = LEGACY_MENUS[menuId];
+      if (!items) return '';
+      const out = ['<aside class="legacy-menu" data-menu-id="', escapeHtml(menuId), '"><ul>'];
+      for (const item of items) {
+        if (item.type === 'folder') {
+          const children = item.children || [];
+          const hasSelected = children.some(c => c.pageId === currentPageId);
+          const classes = ['parent'];
+          if (hasSelected) classes.push('expanded');
+          out.push('<li data-key="', escapeHtml(item.key), '" class="', classes.join(' '), '">', escapeHtml(item.label), '</li>');
+          for (const child of children) {
+            const childClasses = ['child'];
+            if (!hasSelected) childClasses.push('hidden');
+            if (child.pageId === currentPageId) childClasses.push('selected');
+            const pageAttr = child.pageId ? ' data-page-id="' + escapeHtml(child.pageId) + '"' : '';
+            out.push('<li data-key="', escapeHtml(child.key), '" class="', childClasses.join(' '), '" data-parent="', escapeHtml(item.key), '"', pageAttr, '>', escapeHtml(child.label), '</li>');
+          }
+        } else {
+          const cls = item.pageId === currentPageId ? ' class="selected"' : '';
+          const pageAttr = item.pageId ? ' data-page-id="' + escapeHtml(item.pageId) + '"' : '';
+          out.push('<li data-key="', escapeHtml(item.key), '"', cls, pageAttr, '>', escapeHtml(item.label), '</li>');
+        }
+      }
+      out.push('</ul></aside>');
+      return out.join('');
+    }
+
+    // Find a nav item by id across all modules (HRM, Approval, Separate
+    // modules), regardless of which is currently active. Used by loadPage
+    // to look up a target item's flags (headless, legacyMenu, label).
+    function findItemAnywhere(id) {
+      for (const mid in MODULE_META) {
+        const found = MODULE_META[mid].items.find(i => i.id === id);
+        if (found) return found;
+      }
+      return null;
+    }
 
     // ── Separate-mode module items (from g-sheet-csv/*-Separate-*.csv) ──
     // Each former-HRM child becomes its own top-level module, absorbing the
@@ -544,13 +697,13 @@
       // Mirrors Payroll Reports: same 8 items, same routing pattern.
       { id: 'emp-reports', label: 'Reports', tier: 1, type: 'submenu' },
         { id: 'rpt-pay-a-messages',           label: 'A-messages',            tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'rpt-pay-accounting-overview',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-accounting-view',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-altinn-status',        label: 'Altinn 3 status',       tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-emp-report',               label: 'Employee report',       tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-analytics',            label: 'HRM Analytics',         tier: 2, type: 'link', specialLink: true },
         { id: 'rpt-pay-reconciliation',       label: 'Reconciliation reports',tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-reports',              label: 'Reports',               tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'rpt-pay-transactions',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-transaction-view',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
       // Mirrors Payroll Settings: same 18 items, same hostModule attributes,
       // alphabetised by label. The host-based routing (in-place when active
       // equals hostModule, new-tab + icon otherwise) is identical.
@@ -558,8 +711,8 @@
         { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
-        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-car-register',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-company-settings',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', hostModule: 'employees' },
@@ -620,13 +773,13 @@
       // click behaviour is intentionally pending — flagged with specialLink.
       { id: 'pay-reports', label: 'Reports', tier: 1, type: 'submenu' },
         { id: 'rpt-pay-a-messages',           label: 'A-messages',            tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'rpt-pay-accounting-overview',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-accounting-view',  label: 'Accounting overview',   tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-altinn-status',        label: 'Altinn 3 status',       tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-emp-report',               label: 'Employee report',       tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-analytics',            label: 'HRM Analytics',         tier: 2, type: 'link', specialLink: true },
         { id: 'rpt-pay-reconciliation',       label: 'Reconciliation reports',tier: 2, type: 'link', hostModule: 'payroll' },
         { id: 'rpt-pay-reports',              label: 'Reports',               tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'rpt-pay-transactions',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
+        { id: 'rpt-pay-transaction-view',         label: 'Transaction overview',  tier: 2, type: 'link', hostModule: 'payroll' },
       // Per Separate-Payroll.csv: each Settings page is hosted by either
       // 'payroll' or 'employees'. When the active module equals hostModule,
       // the row navigates in place; otherwise it gets the new-tab icon and
@@ -636,8 +789,8 @@
         { id: 'set-pay-account-types',        label: 'Account types',         tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-accounts',             label: 'Accounts',              tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-pay-anomaly',              label: 'Anomaly detection',     tier: 2, type: 'link', hostModule: 'payroll' },
-        { id: 'set-emp-cars',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
-        { id: 'set-pay-company',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-emp-car-register',                 label: 'Cars',                  tier: 2, type: 'link', hostModule: 'employees' },
+        { id: 'set-pay-company-settings',              label: 'Company',               tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-cost-unit-import',     label: 'Cost unit import',      tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-cost-unit-management', label: 'Cost unit management',  tier: 2, type: 'link', hostModule: 'employees' },
         { id: 'set-emp-creditors',            label: 'Creditors',             tier: 2, type: 'link', hostModule: 'employees' },
@@ -976,10 +1129,17 @@
       try {
         const res = await fetch(`./pages/${id}.html`);
         if (!res.ok) throw new Error(`${res.status}`);
-        contentArea.innerHTML = await res.text();
+        const stubHtml = await res.text();
+        // Look up the item up-front. Used to decide whether to wrap the
+        // page with a legacy side menu and to set the document title.
+        const itemFromVisible = visibleItems.find(i => i.id === id);
+        const item = itemFromVisible || findItemAnywhere(id);
+        const menuHtml = item && item.legacyMenu
+          ? renderLegacyMenu(item.legacyMenu, id)
+          : '';
+        contentArea.innerHTML = menuHtml + stubHtml;
         // innerHTML doesn't execute injected <script> tags — replace each
-        // with a fresh node so per-page scripts (e.g., the legacy menu's
-        // click handler on the A-messages headless stub) actually run.
+        // with a fresh node so per-page scripts actually run.
         contentArea.querySelectorAll('script').forEach(oldScript => {
           const newScript = document.createElement('script');
           for (const attr of oldScript.attributes) {
@@ -991,7 +1151,6 @@
         panel.setAttribute('active-item', id);
         nav.setAttribute('breadcrumbs', JSON.stringify(computeBreadcrumb(id)));
         // Update the browser tab title — page label only.
-        const item = visibleItems.find(i => i.id === id);
         if (item) document.title = item.label;
         requestAnimationFrame(() => applyPageVariation(id));
       } catch (err) {
@@ -1374,6 +1533,42 @@
     panel.addEventListener('hrm-profile',          () => console.log('my profile clicked'));
     panel.addEventListener('hrm-logout',           () => console.log('log out clicked'));
     panel.addEventListener('hrm-user-panel-toggle',() => console.log('user panel toggled'));
+
+    // ── Legacy menu click delegation ──
+    // The legacy side menu (rendered into #content-area for any page that
+    // declares `legacyMenu`) is re-built from scratch on every loadPage,
+    // so we use document-level delegation. Folder headers toggle their
+    // own expanded state; leaves with a `data-page-id` navigate within
+    // the headless tab via loadPage.
+    document.addEventListener('click', (e) => {
+      const li = e.target.closest('.legacy-menu li');
+      if (!li) return;
+      const menu = li.closest('.legacy-menu');
+      if (!menu) return;
+      if (li.classList.contains('parent')) {
+        const expanded = li.classList.toggle('expanded');
+        const key = li.dataset.key;
+        const children = menu.querySelectorAll('li.child[data-parent="' + key + '"]');
+        children.forEach(child => child.classList.toggle('hidden', !expanded));
+        if (expanded && children.length) {
+          // Expanding promotes the first child to selected (and navigates
+          // to its page if it has one). This matches the prototype rule
+          // "expanding a folder sets first item as active".
+          menu.querySelectorAll('li.selected').forEach(el => el.classList.remove('selected'));
+          const first = children[0];
+          first.classList.add('selected');
+          const pageId = first.dataset.pageId;
+          if (pageId) loadPage(pageId);
+        }
+        return;
+      }
+      // Leaf click: set selection, navigate if it has a pageId. Placeholder
+      // leaves without a pageId (e.g. "Income report") just visually select.
+      menu.querySelectorAll('li.selected').forEach(el => el.classList.remove('selected'));
+      li.classList.add('selected');
+      const pageId = li.dataset.pageId;
+      if (pageId) loadPage(pageId);
+    });
   </script>
 
 </body>
