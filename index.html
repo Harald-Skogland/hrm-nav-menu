@@ -298,7 +298,6 @@
           </div>
           <div class="config-children">
             <div class="config-row" data-row="hrm.calendar"><label><input type="checkbox" data-cfg="hrm.calendar" checked><span>Calendar</span></label></div>
-            <div class="config-row" data-row="hrm.dottie"><label><input type="checkbox" data-cfg="hrm.dottie" checked><span>Dottie</span></label></div>
             <div class="config-row" data-row="hrm.employees"><label><input type="checkbox" data-cfg="hrm.employees" checked><span>Employees</span></label></div>
             <div class="config-row" data-row="hrm.expense"><label><input type="checkbox" data-cfg="hrm.expense" checked><span>Expense</span></label></div>
             <div class="config-row" data-row="hrm.payroll"><label><input type="checkbox" data-cfg="hrm.payroll" checked><span>Payroll</span></label></div>
@@ -885,14 +884,15 @@
     // Module visibility rules.
     //   Combined: HRM is always available; Approval gated by `approval`;
     //   Dottie gated by its own top-level `dottie` toggle (alongside Approval).
-    //   Separate: Approval gated by `approval`; former-HRM services (Calendar,
-    //   Dottie, …) gated by the HRM umbrella toggle AND their per-service
-    //   `hrm.<id>` toggle. The HRM master row stays in the Config UI in both
-    //   modes (Combined target = HRM module, Separate target = the group).
+    //   Separate: Approval gated by `approval`; Dottie gated by the same
+    //   top-level `dottie` toggle (Dottie is no longer a child of the HRM
+    //   umbrella in the Config widget); other former-HRM services
+    //   (Calendar, Employees, …) gated by the HRM umbrella toggle AND
+    //   their per-service `hrm.<id>` toggle.
     function isModuleEnabled(mid) {
       if (mid === 'approval') return configState.approval !== false;
       if (mid === 'hrm')      return true;
-      if (mid === 'dottie' && versionMode === 'combined') return configState.dottie !== false;
+      if (mid === 'dottie')   return configState.dottie !== false;
       if (configState.hrm === false) return false;
       return configState[`hrm.${mid}`] !== false;
     }
@@ -1242,7 +1242,6 @@
         dottie: true,
         hrm: true,
         'hrm.calendar': true,
-        'hrm.dottie': true,
         'hrm.employees': true,
         'hrm.expense': true,
         'hrm.payroll': true,
@@ -1254,7 +1253,6 @@
         dottie: true,
         hrm: true,
         'hrm.calendar': true,
-        'hrm.dottie': true,
         'hrm.employees': false,
         'hrm.expense': true,
         'hrm.payroll': false,
@@ -1266,7 +1264,6 @@
         dottie: true,
         hrm: true,
         'hrm.calendar': true,
-        'hrm.dottie': true,
         'hrm.employees': false,
         'hrm.expense': true,
         'hrm.payroll': false,
@@ -1279,7 +1276,6 @@
 
     const HRM_CHILD_LABELS = {
       'hrm.calendar':       'Calendar',
-      'hrm.dottie':         'Dottie',
       'hrm.employees':      'Employees',
       'hrm.expense':        'Expense',
       'hrm.payroll':        'Payroll',
